@@ -7,7 +7,7 @@ import time
 import random
 import utils
 import graph
-#messi
+#ronaldo
 sys.path.append('/afs/csail.mit.edu/u/k/kocabey/Desktop/caffe-tensorflow-master/')
 from mynet import AlexNet
 from sklearn.metrics import average_precision_score
