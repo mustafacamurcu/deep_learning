@@ -93,7 +93,7 @@ def checker(image_id, part_id, guess, visibility):
         if guess[2] == 0:
             return True
         if guess[2] == 1:
-            return False
+            return True
 
     if visibility == 1:
         if guess[2] == 1:
@@ -104,13 +104,13 @@ def checker(image_id, part_id, guess, visibility):
             if distance > 1.5 * stddev:
                 return False
         if guess[2] == 0:
-            return False
+            return True
 
 def model_accuracy(sess, part_id):
     global ground_truth
     jpg = glob.glob( root1 + 'BirdData/RealTest/*.jpg')
-    correct = 0; total = 0;
-    for i in range(len(jpg)):
+    correct = 0; total = 0; visibility_correct = 0;
+    for i in range(100):
         image_id = int("".join(jpg[i].split(".jpg")).split("Test/")[1]) + 1
         batch_x = np.zeros((1,224,224,3))
         batch_x[0,:,:,:,] = VGG_utils.image_preprocess(jpg[i])
@@ -133,6 +133,9 @@ def model_accuracy(sess, part_id):
 
         guess = [ mx[0][part_id - 1],my[0][part_id - 1], f_c[0][0][0][part_id - 1] ]
 
+        if f_c[0][0][0][part_id - 1] == visibility:
+            visibility_correct += 1
+
         result = checker(image_id, part_id, guess, visibility)
 
         if result == True:
@@ -140,6 +143,8 @@ def model_accuracy(sess, part_id):
 
         if result == False:
             correct += 0; total += 1
+
+    print "visibility score: ", visibility_correct / float(total)
 
     return correct / float( total )
 
