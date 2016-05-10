@@ -3,7 +3,7 @@ from sklearn import mixture
 import glob
 import math
 
-file_pattern = '/data/vision/torralba/health-habits/other/enes/CelebData/RSTrain/Points/*.txt'
+file_pattern = '/data/vision/torralba/health-habits/other/enes/CelebData/SquareTest/Points/*.txt'
 num_components = 10
 
 def read_landmarks(file_pattern):
@@ -46,6 +46,9 @@ def fit_GMM(representation,num_components):
     g = mixture.GMM(num_components)
     g.fit(representation)
     return g
+
+def save_weights(GMM):
+    
 
 all_data = read_landmarks(file_pattern)
 print all_data.shape
