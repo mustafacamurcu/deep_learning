@@ -93,7 +93,7 @@ def checker(image_id, part_id, guess, visibility):
         if guess[2] == 0:
             return True
         if guess[2] == 1:
-            return False
+            return True
 
     if visibility == 1:
         if guess[2] == 1:
@@ -104,7 +104,7 @@ def checker(image_id, part_id, guess, visibility):
             if distance > 1.5 * stddev:
                 return False
         if guess[2] == 0:
-            return False
+            return True
 
 def model_accuracy(sess, part_id):
     global ground_truth
