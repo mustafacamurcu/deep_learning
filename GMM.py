@@ -3,7 +3,10 @@ from sklearn import mixture
 import glob
 import math
 
-file_pattern = '/data/vision/torralba/health-habits/other/enes/CelebData/SquareTest/Points/*.txt'
+root1 = '/data/vision/torralba/health-habits/other/enes/'
+root2 = '/afs/csail.mit.edu/u/k/kocabey/Desktop/'
+
+file_pattern = root1 + 'CelebData/SquareTest/Points/*.txt'
 num_components = 10
 
 def read_landmarks(file_pattern):
@@ -47,8 +50,23 @@ def fit_GMM(representation,num_components):
     g.fit(representation)
     return g
 
-def save_weights(GMM):
-    
+def save_parameters(GMM, file_path):
+    f = open(file_path, 'w')
+
+    f.write(str(len(GMM.weights_)))
+    for weight in GMM.weights_:
+        f.write(str(weight))
+
+    f.write(str(len(GMM.means_)))
+    for mean in GMM.means_:
+        f.write(str(mean))
+
+    f.write(str(len(GMM.covars_)))
+    for covar in GMM.covars_:
+        f.write(str(covar))
+
+    f.close()
+    return
 
 all_data = read_landmarks(file_pattern)
 print all_data.shape
