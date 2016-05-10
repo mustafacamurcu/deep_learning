@@ -3,7 +3,7 @@ from sklearn import mixture
 import glob
 import math
 
-file_pattern = '/data/vision/torralba/health-habits/other/enes/CelebData/Points/*.txt'
+file_pattern = '/data/vision/torralba/health-habits/other/enes/CelebData/RSTrain/Points/*.txt'
 num_components = 10
 
 def read_landmarks(file_pattern):
