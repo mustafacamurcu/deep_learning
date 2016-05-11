@@ -30,6 +30,9 @@ root2 = '/data/vision/torralba/health-habits/other/enes/'
 file_name_ground_truth = root1 + 'BirdData/part_locs.txt'
 file_name_MTurk = root1 + 'BirdData/part_click_locs.txt'
 
+def sigmoid(x):
+  return 1 / (1 + math.exp(-x))
+
 def import_ground_truth(file_name):
     ground_truth = np.zeros((11789,16,3))
     f = open(file_name)
@@ -114,7 +117,8 @@ def model_accuracy(sess, part_id):
         image_id = int("".join(jpg[i].split(".jpg")).split("Test/")[1]) + 1
         batch_x = np.zeros((1,224,224,3))
         batch_x[0,:,:,:,] = VGG_utils.image_preprocess(jpg[i])
-        mx,my,f_c = sess.run([mean_x,mean_y,guess], feed_dict = {x: batch_x})
+        mx,my,f_c = sess.run([mean_x,mean_y,fc], feed_dict = {x: batch_x})
+
 
         visibility = ground_truth[image_id][part_id][2]
 
@@ -126,9 +130,9 @@ def model_accuracy(sess, part_id):
         for s in range(15):
             mx[0][s] = int(mx[0][s])
             my[0][s] = int(my[0][s])
-            if f_c[0][0][0][s] > 0.5:
+            if sigmoid(f_c[0][0][0][s]) > 0.5:
                 f_c[0][0][0][s] = 1
-            if f_c[0][0][0][s] <= 0.5:
+            if sigmoid(f_c[0][0][0][s]) <= 0.5:
                 f_c[0][0][0][s] = 0
 
         guess = [ mx[0][part_id - 1],my[0][part_id - 1], f_c[0][0][0][part_id - 1] ]
@@ -158,8 +162,6 @@ W1 = tf.Variable(tf.random_uniform([14,14,512,15],-1e-2,1e-2))
 b1 = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
 
 fc = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W1, [1,1,1,1], 'VALID'), b1 )
-
-guess = tf.sigmoid(fc)
 
 conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W, [1,1,1,1], 'VALID'), b )
 conv = tf.nn.relu(conv)
