@@ -145,6 +145,6 @@ def get_next_trn_batch_human(all_data):
         for j in range(14):
             batch_point_x[i][j] = all_data[trn_indices[i]][1][j][0] * 10 / float(aa)
             batch_point_y[i][j] = all_data[trn_indices[i]][1][j][1] * 10 / float(aa)
-            batch_existence[i][j] = all_data[trn_indices[i]][1][j][2]
+            batch_existence[i][j] = 1.
 
     return (batch_x,batch_point_x,batch_point_y,batch_existence)
