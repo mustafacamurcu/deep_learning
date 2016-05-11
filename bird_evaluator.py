@@ -159,6 +159,8 @@ b1 = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
 
 fc = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W1, [1,1,1,1], 'VALID'), b1 )
 
+guess = tf.sigmoid(fc)
+
 conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W, [1,1,1,1], 'VALID'), b )
 conv = tf.nn.relu(conv)
 
