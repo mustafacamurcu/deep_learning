@@ -30,6 +30,9 @@ root2 = '/data/vision/torralba/health-habits/other/enes/'
 file_name_ground_truth = root1 + 'BirdData/part_locs.txt'
 file_name_MTurk = root1 + 'BirdData/part_click_locs.txt'
 
+def sigmoid(x):
+  return 1 / (1 + math.exp(-x))
+
 def import_ground_truth(file_name):
     ground_truth = np.zeros((11789,16,3))
     f = open(file_name)
@@ -116,6 +119,7 @@ def model_accuracy(sess, part_id):
         batch_x[0,:,:,:,] = VGG_utils.image_preprocess(jpg[i])
         mx,my,f_c = sess.run([mean_x,mean_y,fc], feed_dict = {x: batch_x})
 
+
         visibility = ground_truth[image_id][part_id][2]
 
         img = mpimg.imread(jpg[i])
@@ -126,9 +130,9 @@ def model_accuracy(sess, part_id):
         for s in range(15):
             mx[0][s] = int(mx[0][s])
             my[0][s] = int(my[0][s])
-            if f_c[0][0][0][s] > 0.5:
+            if sigmoid(f_c[0][0][0][s]) > 0.5:
                 f_c[0][0][0][s] = 1
-            if f_c[0][0][0][s] <= 0.5:
+            if sigmoid(f_c[0][0][0][s]) <= 0.5:
                 f_c[0][0][0][s] = 0
 
         guess = [ mx[0][part_id - 1],my[0][part_id - 1], f_c[0][0][0][part_id - 1] ]
@@ -175,7 +179,7 @@ for i in range(10):
 
 saver = tf.train.Saver()
 sess = tf.Session()
-saver.restore(sess, root2 + 'Experiments/Models/VGG_bird_model_conv5_5_trained')
+saver.restore(sess, root2 + 'Experiments/Models/VGG_bird_model_conv5_5')
 
 for i in range(1,16):
     print "Part", str(i),":", model_accuracy(sess, i)

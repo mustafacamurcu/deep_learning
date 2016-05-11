@@ -61,7 +61,9 @@ def VGG_bird_point_detection_net(net):
 
     loss = tf.reduce_sum(loss)
 
-    loss +=  tf.reduce_sum( tf.nn.sigmoid_cross_entropy_with_logits(fc,z_) ) # for guessing visibility
+
+    delta = 100.
+    loss +=  delta * tf.reduce_sum( tf.nn.sigmoid_cross_entropy_with_logits(fc,z_) ) # for guessing visibility
 
     loss /= VGG_utils.BATCH_SIZE
 
