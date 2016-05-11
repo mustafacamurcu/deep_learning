@@ -179,7 +179,7 @@ for i in range(10):
 
 saver = tf.train.Saver()
 sess = tf.Session()
-saver.restore(sess, root2 + 'Experiments/Models/VGG_bird_model_conv5_5_trained')
+saver.restore(sess, root2 + 'Experiments/Models/VGG_bird_model_conv5_5')
 
 for i in range(1,16):
     print "Part", str(i),":", model_accuracy(sess, i)
