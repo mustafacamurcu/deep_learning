@@ -133,7 +133,8 @@ def model_accuracy(sess, part_id):
 
         guess = [ mx[0][part_id - 1],my[0][part_id - 1], f_c[0][0][0][part_id - 1] ]
 
-        if f_c[0][0][0][part_id - 1] == visibility:
+        #if f_c[0][0][0][part_id - 1] == visibility:
+        if random.randint(0,1) == visibility:
             visibility_correct += 1
 
         result = checker(image_id, part_id, guess, visibility)
