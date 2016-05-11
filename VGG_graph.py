@@ -13,6 +13,8 @@ def VGG_bird_point_detection_net(net):
 
     fc = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W1, [1,1,1,1], 'VALID'), b1 )
 
+    guess = tf.sigmoid(fc)
+
     conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W, [1,1,1,1], 'VALID'), b )
     conv = tf.nn.relu(conv)
 

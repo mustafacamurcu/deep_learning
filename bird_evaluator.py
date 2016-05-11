@@ -114,7 +114,7 @@ def model_accuracy(sess, part_id):
         image_id = int("".join(jpg[i].split(".jpg")).split("Test/")[1]) + 1
         batch_x = np.zeros((1,224,224,3))
         batch_x[0,:,:,:,] = VGG_utils.image_preprocess(jpg[i])
-        mx,my,f_c = sess.run([mean_x,mean_y,fc], feed_dict = {x: batch_x})
+        mx,my,f_c = sess.run([mean_x,mean_y,guess], feed_dict = {x: batch_x})
 
         visibility = ground_truth[image_id][part_id][2]
 
@@ -133,8 +133,7 @@ def model_accuracy(sess, part_id):
 
         guess = [ mx[0][part_id - 1],my[0][part_id - 1], f_c[0][0][0][part_id - 1] ]
 
-        #if f_c[0][0][0][part_id - 1] == visibility:
-        if 1 == visibility:
+        if f_c[0][0][0][part_id - 1] == visibility:
             visibility_correct += 1
 
         result = checker(image_id, part_id, guess, visibility)
