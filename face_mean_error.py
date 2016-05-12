@@ -9,9 +9,9 @@ import matplotlib.image as mpimg
 import glob
 import math
 root = '/data/vision/torralba/health-habits/other/enes/'
-sys.path.append(root + 'VGG_Face/')
+sys.path.append(root + 'VGG_Classic/')
 sys.path.append('/afs/csail.mit.edu/u/k/kocabey/Desktop/caffe-tensorflow-master/')
-from VGG_Face import VGG_Face
+from VGG_Classic import VGG_Classic
 
 def mean_error(part_id,image_id):
     global sess, jpg, txt
@@ -46,7 +46,7 @@ jpg = sorted(glob.glob('/data/vision/torralba/health-habits/other/enes/CelebData
 txt = sorted(glob.glob('/data/vision/torralba/health-habits/other/enes/CelebData/SquareTest/Points/*.txt'))
 
 x = tf.placeholder(tf.float32, shape = [1,224,224,3])
-net = VGG_Face({'data' : x}, trainable = True)
+net = VGG_Classic({'data' : x}, trainable = True)
 
 W = tf.Variable(tf.random_uniform([5,5,512,5],-1,1))
 b = tf.Variable(tf.random_uniform([5],-1,1))
@@ -68,50 +68,52 @@ saver = tf.train.Saver()
 
 a = 0
 sess = tf.Session()
-saver.restore(sess, root + 'Experiments/Models/VGG_face_model_conv5_5_training_done')
+saver.restore(sess, root + 'Experiments/Models/VGG_face_scratch_model_conv5_5_trained')
 
 total = [0,0,0,0,0]
 success = [0,0,0,0,0]
 success
-for i in range(len(jpg)):
-    u = mean_error(0,i)
-    total[0] += u
-    if u <= 0.1:
-        success[0] += 1
 
-    u = mean_error(1,i)
-    total[1] += u
-    if u <= 0.1:
-        success[1] += 1
+while True:
+    for i in range(len(jpg)):
+        u = mean_error(0,i)
+        total[0] += u
+        if u <= 0.1:
+            success[0] += 1
 
-    u = mean_error(2,i)
-    total[2] += u
-    if u <= 0.1:
-        success[2] += 1
+        u = mean_error(1,i)
+        total[1] += u
+        if u <= 0.1:
+            success[1] += 1
 
-    u =  mean_error(3,i)
-    total[3] += u
-    if u <= 0.1:
-        success[3] += 1
+        u = mean_error(2,i)
+        total[2] += u
+        if u <= 0.1:
+            success[2] += 1
 
-    u = mean_error(4,i)
-    total[4] += u
-    if u <= 0.1:
-        success[4] += 1
+        u =  mean_error(3,i)
+        total[3] += u
+        if u <= 0.1:
+            success[3] += 1
 
-    utils.show_progress(i,len(jpg))
+        u = mean_error(4,i)
+        total[4] += u
+        if u <= 0.1:
+            success[4] += 1
 
-print "\n"
-for i in range(5):
-    print total[i]/ float(len(jpg))
+        utils.show_progress(i,len(jpg))
 
-print "Mean Error"
-print sum(total) / float(5 * len(jpg))
+    print "\n"
+    for i in range(5):
+        print total[i]/ float(len(jpg))
 
-print "\n"
+    print "Mean Error"
+    print sum(total) / float(5 * len(jpg))
 
-for i in range(5):
-    print 1 - success[i] / float(len(jpg))
+    print "\n"
 
-print "Failure Rate"
-print 1 - sum(success) / float(5 * len(jpg))
+    for i in range(5):
+        print 1 - success[i] / float(len(jpg))
+
+    print "Failure Rate"
+    print 1 - sum(success) / float(5 * len(jpg))

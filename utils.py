@@ -83,6 +83,7 @@ def import_bird_point_data(jpg,txt):
     print len(jpg), " ", len(txt)
     all_data = []
     for i in range(len(txt)):
+        show_progress(i,len(txt))
         f = open(txt[i],"r")
         data = f.readlines()
         temp = list(data)
@@ -92,6 +93,7 @@ def import_bird_point_data(jpg,txt):
         datam.append(data)
         directory = jpg[i]
         all_data.append( (directory , datam) )
+    print "\n"
     return all_data
 
 def import_MTFL_data(jpg,txt):

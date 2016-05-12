@@ -9,36 +9,38 @@ import utils
 import VGG_utils
 import VGG_graph
 root = '/data/vision/torralba/health-habits/other/enes/'
-sys.path.append(root + 'VGG_Classic/')
+sys.path.append(root + 'VGG_Bird/')
 sys.path.append('/afs/csail.mit.edu/u/k/kocabey/Desktop/caffe-tensorflow-master/')
-from VGG_Classic import VGG_Classic
+from VGG_Bird import BIRDS_VGG_ILSVRC_16_layers
 
-train_jpg, train_txt = utils.MTFL_directories("train")
-test_jpg, test_txt = utils.MTFL_directories("test")
-train_data = utils.import_MTFL_data(train_jpg,train_txt)
-test_data  = utils.import_MTFL_data(test_jpg,test_txt)
+heatmap_size = 20
+
+train_jpg, train_txt = utils.bird_random_slice_directories("train")
+test_jpg, test_txt = utils.bird_random_slice_directories("test")
+train_data = utils.import_bird_point_data(train_jpg,train_txt)
+test_data  = utils.import_bird_point_data(test_jpg,test_txt)
 
 x = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,224,224,3])
-net = VGG_Classic({'data' : x}, trainable = True)
+net = BIRDS_VGG_ILSVRC_16_layers({'data' : x}, trainable = True)
 
-u = VGG_graph.VGG_face_point_detection_net(net)
-loss = u[0]; mean_x = u[1]; mean_y = u[2]; x_ = u[3]; y_ = u[4]; loss2 = u[5];
+u = VGG_graph.VGG_bird_point_detection_net_conv4_9(net)
+loss = u[0]; mean_x = u[1]; mean_y = u[2]; x_ = u[3]; y_ = u[4]; z_ = u[5]; loss2 = u[6];
 
 train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
 
 saver = tf.train.Saver()
 ITERATIONS = 1000000
 
-f = open(root + "Experiments/Results/VGG_face_scratch_train_log_conv5_5.txt", "w")
-g = open(root + "Experiments/Results/VGG_face_scratch_test_log_conv5_5.txt", "w")
+f = open(root + "Experiments/Results/VGG_bird_train_log_conv4_9.txt", "w")
+g = open(root + "Experiments/Results/VGG_bird_test_log_conv4_9.txt", "w")
 
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
-    #net.load(root + "VGG_Classic/VGG_Classic.npy", sess)
+    net.load(root + "VGG_Bird/VGG_Bird.npy", sess)
     print "VGG Network has been successfully uploaded!"
     while ITERATIONS > 0:
-        batch_x,batch_point_x,batch_point_y = VGG_utils.get_next_trn_batch_face(train_data)
-        _, error,mx,my,l2 = sess.run( [train_step,loss,mean_x,mean_y,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y } )
+        batch_x,batch_point_x,batch_point_y,batch_existence = VGG_utils.get_next_trn_batch_bird(train_data, heatmap_size)
+        _, error,l2 = sess.run( [train_step,loss,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y, z_: batch_existence } )
 
         ITERATIONS -= 1
         sys.stdout.write('\r\x1b[K')
@@ -53,8 +55,8 @@ with tf.Session() as sess:
             f.flush()
             error = 0; l2 = 0;
             for i in range(10):
-                batch_x,batch_point_x,batch_point_y = VGG_utils.get_next_trn_batch_face(test_data)
-                a = sess.run( [loss,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y} )
+                batch_x,batch_point_x,batch_point_y,batch_existence = VGG_utils.get_next_trn_batch_bird(test_data, heatmap_size)
+                a = sess.run( [loss,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y, z_: batch_existence } )
                 error += a[0]; l2 += a[1]
             error /= 10.; l2 /= 10.;
             sys.stdout.write("Validation Error: %lf loss2: %lf Remaining Iterations: %d" %(error, l2, ITERATIONS))
@@ -63,6 +65,6 @@ with tf.Session() as sess:
             g.flush()
 
         if ITERATIONS % 200 == 0:
-            saver.save(sess, root + 'Experiments/Models/VGG_face_scratch_model_conv5_5')
+            saver.save(sess, root + 'Experiments/Models/VGG_bird_model_conv4_9')
 f.close()
 g.close()

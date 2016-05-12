@@ -117,15 +117,15 @@ def model_accuracy(sess, part_id):
         image_id = int("".join(jpg[i].split(".jpg")).split("Test/")[1]) + 1
         batch_x = np.zeros((1,224,224,3))
         batch_x[0,:,:,:,] = VGG_utils.image_preprocess(jpg[i])
-        mx,my,f_c = sess.run([mean_x,mean_y,fc], feed_dict = {x: batch_x})
+        mx,my,f_c = sess.run([mean_x,mean_y,guess], feed_dict = {x: batch_x})
 
 
         visibility = ground_truth[image_id][part_id][2]
 
         img = mpimg.imread(jpg[i])
 
-        mx = mx * img.shape[0] / 10.
-        my = my * img.shape[1] / 10.
+        mx = mx * img.shape[0] / 20.
+        my = my * img.shape[1] / 20.
 
         for s in range(15):
             mx[0][s] = int(mx[0][s])
@@ -155,31 +155,35 @@ def model_accuracy(sess, part_id):
 x = tf.placeholder(tf.float32, shape = [1,224,224,3])
 net = BIRDS_VGG_ILSVRC_16_layers({'data' : x}, trainable = True)
 
-W = tf.Variable(tf.random_uniform([5,5,512,15],-1,1))
-b = tf.Variable(tf.random_uniform([15],-1,1))
+W = tf.Variable(tf.random_uniform([9,9,512,15],-1e-2,1e-2))
+b = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
 
-W1 = tf.Variable(tf.random_uniform([14,14,512,15],-1e-2,1e-2))
-b1 = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
-
-fc = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W1, [1,1,1,1], 'VALID'), b1 )
-
-conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W, [1,1,1,1], 'VALID'), b )
+conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv4_2'], W, [1,1,1,1], 'VALID'), b )
 conv = tf.nn.relu(conv)
 
 total = tf.reduce_sum(conv, [1,2], True)
 total = tf.clip_by_value(total,1e-9,1000000000)
 conv /= total
 
+W1 = tf.Variable(tf.random_uniform([20,20,512,15],-1e-2,1e-2))
+b1 = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
+
+fc = tf.nn.bias_add( tf.nn.conv2d(conv, W1, [1,1,1,1], 'VALID'), b1 )
+
+guess = tf.sigmoid(fc)
+
 mean_x, mean_y = 0,0
 
-for i in range(10):
-    for j in range(10):
+for i in range(20):
+    for j in range(20):
         mean_x += conv[:,i,j,:] * (i + 0.5)
         mean_y += conv[:,i,j,:] * (j + 0.5)
 
+sxx, sxy, syy = 0.1,0,0.1
+
 saver = tf.train.Saver()
 sess = tf.Session()
-saver.restore(sess, root2 + 'Experiments/Models/VGG_bird_model_conv5_5')
+saver.restore(sess, root2 + 'Experiments/Models/VGG_bird_visibility_model_conv4_9_trained')
 
 for i in range(1,16):
     print "Part", str(i),":", model_accuracy(sess, i)
