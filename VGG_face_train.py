@@ -29,12 +29,12 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
 saver = tf.train.Saver()
 ITERATIONS = 1000000
 
-f = open(root + "Experiments/Results/VGG_face_classic_train_log_conv5_5.txt", "w")
-g = open(root + "Experiments/Results/VGG_face_classic_test_log_conv5_5.txt", "w")
+f = open(root + "Experiments/Results/VGG_face_scratch_train_log_conv5_5.txt", "w")
+g = open(root + "Experiments/Results/VGG_face_scratch_test_log_conv5_5.txt", "w")
 
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
-    net.load(root + "VGG_Classic/VGG_Classic.npy", sess)
+    #net.load(root + "VGG_Classic/VGG_Classic.npy", sess)
     print "VGG Network has been successfully uploaded!"
     while ITERATIONS > 0:
         batch_x,batch_point_x,batch_point_y = VGG_utils.get_next_trn_batch_face(train_data)
@@ -63,6 +63,6 @@ with tf.Session() as sess:
             g.flush()
 
         if ITERATIONS % 200 == 0:
-            saver.save(sess, root + 'Experiments/Models/VGG_face_classic_model_conv5_5')
+            saver.save(sess, root + 'Experiments/Models/VGG_face_scratch_model_conv5_5')
 f.close()
 g.close()
