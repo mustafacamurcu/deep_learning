@@ -15,10 +15,10 @@ from VGG_Bird import BIRDS_VGG_ILSVRC_16_layers
 
 heatmap_size = 20
 
-#train_jpg, train_txt = utils.bird_random_slice_directories("train")
-#test_jpg, test_txt = utils.bird_random_slice_directories("test")
-#train_data = utils.import_bird_point_data(train_jpg,train_txt)
-#test_data  = utils.import_bird_point_data(test_jpg,test_txt)
+train_jpg, train_txt = utils.bird_random_slice_directories("train")
+test_jpg, test_txt = utils.bird_random_slice_directories("test")
+train_data = utils.import_bird_point_data(train_jpg,train_txt)
+test_data  = utils.import_bird_point_data(test_jpg,test_txt)
 
 x = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,224,224,3])
 net = BIRDS_VGG_ILSVRC_16_layers({'data' : x}, trainable = True)
