@@ -26,7 +26,7 @@ def image_preprocess(path):
 
     return image
 
-def get_next_trn_batch_bird(all_data):
+def get_next_trn_batch_bird(all_data, heatmap_size):
     trn_indices = []
     for i in range(BATCH_SIZE):
         trn_indices.append(random.randint(0,len(all_data) - 1))
@@ -42,8 +42,8 @@ def get_next_trn_batch_bird(all_data):
     for i in range(BATCH_SIZE):
         (aa,bb,cc) = imread( all_data[trn_indices[i]][0] ).shape
         for j in range(15):
-            batch_point_x[i][j] = all_data[trn_indices[i]][1][0][ 3*j ] * 10 / float(aa)
-            batch_point_y[i][j] = all_data[trn_indices[i]][1][0][3*j+1] * 10 / float(aa)
+            batch_point_x[i][j] = all_data[trn_indices[i]][1][0][ 3*j ] * heatmap_size / float(aa)
+            batch_point_y[i][j] = all_data[trn_indices[i]][1][0][3*j+1] * heatmap_size / float(aa)
             batch_existence[i][j] = all_data[trn_indices[i]][1][0][3*j+2]
 
     return (batch_x,batch_point_x,batch_point_y,batch_existence)
