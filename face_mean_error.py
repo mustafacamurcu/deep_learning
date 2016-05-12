@@ -73,45 +73,47 @@ saver.restore(sess, root + 'Experiments/Models/VGG_face_classic_model_conv5_5_tr
 total = [0,0,0,0,0]
 success = [0,0,0,0,0]
 success
-for i in range(len(jpg)):
-    u = mean_error(0,i)
-    total[0] += u
-    if u <= 0.1:
-        success[0] += 1
 
-    u = mean_error(1,i)
-    total[1] += u
-    if u <= 0.1:
-        success[1] += 1
+while True:
+    for i in range(len(jpg)):
+        u = mean_error(0,i)
+        total[0] += u
+        if u <= 0.1:
+            success[0] += 1
 
-    u = mean_error(2,i)
-    total[2] += u
-    if u <= 0.1:
-        success[2] += 1
+        u = mean_error(1,i)
+        total[1] += u
+        if u <= 0.1:
+            success[1] += 1
 
-    u =  mean_error(3,i)
-    total[3] += u
-    if u <= 0.1:
-        success[3] += 1
+        u = mean_error(2,i)
+        total[2] += u
+        if u <= 0.1:
+            success[2] += 1
 
-    u = mean_error(4,i)
-    total[4] += u
-    if u <= 0.1:
-        success[4] += 1
+        u =  mean_error(3,i)
+        total[3] += u
+        if u <= 0.1:
+            success[3] += 1
 
-    utils.show_progress(i,len(jpg))
+        u = mean_error(4,i)
+        total[4] += u
+        if u <= 0.1:
+            success[4] += 1
 
-print "\n"
-for i in range(5):
-    print total[i]/ float(len(jpg))
+        utils.show_progress(i,len(jpg))
 
-print "Mean Error"
-print sum(total) / float(5 * len(jpg))
+    print "\n"
+    for i in range(5):
+        print total[i]/ float(len(jpg))
 
-print "\n"
+    print "Mean Error"
+    print sum(total) / float(5 * len(jpg))
 
-for i in range(5):
-    print 1 - success[i] / float(len(jpg))
+    print "\n"
 
-print "Failure Rate"
-print 1 - sum(success) / float(5 * len(jpg))
+    for i in range(5):
+        print 1 - success[i] / float(len(jpg))
+
+    print "Failure Rate"
+    print 1 - sum(success) / float(5 * len(jpg))
