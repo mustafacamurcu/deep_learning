@@ -23,7 +23,7 @@ test_data  = utils.import_bird_point_data(test_jpg,test_txt)
 x = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,224,224,3])
 net = BIRDS_VGG_ILSVRC_16_layers({'data' : x}, trainable = True)
 
-u = VGG_graph.VGG_bird_point_detection_net_conv4_9(net)
+u = VGG_graph.VGG_bird_visibility_conv4_9(net)
 loss = u[0]; mean_x = u[1]; mean_y = u[2]; x_ = u[3]; y_ = u[4]; z_ = u[5]; loss2 = u[6];
 
 train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
