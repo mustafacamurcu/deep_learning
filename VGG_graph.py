@@ -438,6 +438,8 @@ def VGG_bird_visibility_conv4_9(net):
 
     fc = tf.nn.bias_add( tf.nn.conv2d(conv, W1, [1,1,1,1], 'VALID'), b1 )
 
+    guess = tf.sigmoid(fc)
+
     mean_x, mean_y = 0,0
 
     for i in range(20):
@@ -478,6 +480,7 @@ def VGG_bird_visibility_conv4_9(net):
     loss2 /= 15 * VGG_utils.BATCH_SIZE - tf.reduce_sum(1 - z_)
 
     loss = tf.reduce_sum(loss)
+    loss += tf.reduce_sum( tf.nn.sigmoid_cross_entropy_with_logits(fc,z_) )
 
     loss /= VGG_utils.BATCH_SIZE
 
