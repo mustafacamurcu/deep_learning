@@ -124,8 +124,8 @@ def model_accuracy(sess, part_id):
 
         img = mpimg.imread(jpg[i])
 
-        mx = mx * img.shape[0] / 10.
-        my = my * img.shape[1] / 10.
+        mx = mx * img.shape[0] / 20.
+        my = my * img.shape[1] / 20.
 
         for s in range(15):
             mx[0][s] = int(mx[0][s])
@@ -152,7 +152,9 @@ def model_accuracy(sess, part_id):
 
     return correct / float( total )
 
-x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
+x = tf.placeholder(tf.float32, shape = [1,224,224,3])
+net = BIRDS_VGG_ILSVRC_16_layers({'data' : x}, trainable = True)
+
 W = tf.Variable(tf.random_uniform([9,9,512,15],-1e-2,1e-2))
 b = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
 
