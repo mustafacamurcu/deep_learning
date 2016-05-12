@@ -183,7 +183,7 @@ sxx, sxy, syy = 0.1,0,0.1
 
 saver = tf.train.Saver()
 sess = tf.Session()
-saver.restore(sess, root2 + 'Experiments/Models/VGG_bird_visibility_model_conv4_9')
+saver.restore(sess, root2 + 'Experiments/Models/VGG_bird_visibility_model_conv4_9_trained')
 
 for i in range(1,16):
     print "Part", str(i),":", model_accuracy(sess, i)
