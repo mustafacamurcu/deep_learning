@@ -9,9 +9,9 @@ import matplotlib.image as mpimg
 import glob
 import math
 root = '/data/vision/torralba/health-habits/other/enes/'
-sys.path.append(root + 'VGG_Face/')
+sys.path.append(root + 'VGG_Classic/')
 sys.path.append('/afs/csail.mit.edu/u/k/kocabey/Desktop/caffe-tensorflow-master/')
-from VGG_Face import VGG_Face
+from VGG_Classic import VGG_Classic
 
 def mean_error(part_id,image_id):
     global sess, jpg, txt
@@ -46,7 +46,7 @@ jpg = sorted(glob.glob('/data/vision/torralba/health-habits/other/enes/CelebData
 txt = sorted(glob.glob('/data/vision/torralba/health-habits/other/enes/CelebData/SquareTest/Points/*.txt'))
 
 x = tf.placeholder(tf.float32, shape = [1,224,224,3])
-net = VGG_Face({'data' : x}, trainable = True)
+net = VGG_Classic({'data' : x}, trainable = True)
 
 W = tf.Variable(tf.random_uniform([5,5,512,5],-1,1))
 b = tf.Variable(tf.random_uniform([5],-1,1))
