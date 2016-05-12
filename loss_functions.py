@@ -1,1 +1,2 @@
-def compositional_loss():
+def compositional_loss(mean_x,mean_y):
+    

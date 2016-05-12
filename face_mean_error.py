@@ -68,7 +68,7 @@ saver = tf.train.Saver()
 
 a = 0
 sess = tf.Session()
-saver.restore(sess, root + 'Experiments/Models/VGG_face_model_conv5_5_training_done')
+saver.restore(sess, root + 'Experiments/Models/VGG_face_classic_model_conv5_5_trained')
 
 total = [0,0,0,0,0]
 success = [0,0,0,0,0]

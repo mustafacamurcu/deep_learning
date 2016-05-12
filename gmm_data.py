@@ -46,12 +46,12 @@ def prepare_bird_representation(all_data):
     return representation
 
 
-def fit_GMM(representation):
+def fit_bird_GMM(representation):
     n = representation.shape[0]
     X = representation.reshape((n,2730*2))
     K = 50
-    [Mu,P,Var] = gmm_utils.init(X,K)
 
+    [Mu,P,Var] = gmm_utils.init(X,K)
     [Mu,P,Var,post,LL] = gmm_utils.mixGauss_part2(X,K,Mu,P,Var)
 
-    
+    return [Yarin test edilecek]
