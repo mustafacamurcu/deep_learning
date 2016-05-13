@@ -19,7 +19,6 @@ def read_data(file_path, length):
             all_data[i][j] = data[j]
 
 
-
     return all_data
 
 def prepare_bird_representation(all_data):
