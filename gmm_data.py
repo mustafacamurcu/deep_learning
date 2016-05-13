@@ -8,6 +8,7 @@ root2 = '/afs/csail.mit.edu/u/k/kocabey/Desktop/'
 def read_data(file_path, length):
     directories = glob.glob(file_path)
     num_data = len(directories)
+    print num_data
     all_data = np.zeros((num_data, length))
 
     for i in range(len(directories)):
@@ -16,6 +17,8 @@ def read_data(file_path, length):
 
         for j in range(len(data)):
             all_data[i][j] = data[j]
+
+
 
     return all_data
 
