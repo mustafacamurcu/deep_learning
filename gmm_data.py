@@ -1,6 +1,7 @@
 import numpy as np
 import glob
 import gmm_utils
+import math
 
 root1 = '/data/vision/torralba/health-habits/other/enes/'
 root2 = '/afs/csail.mit.edu/u/k/kocabey/Desktop/'
