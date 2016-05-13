@@ -487,5 +487,3 @@ def VGG_bird_visibility_conv4_9(net):
     loss /= VGG_utils.BATCH_SIZE
 
     return loss, mean_x, mean_y, x_, y_, z_, loss2, saver
-
-def VGG_bird_
