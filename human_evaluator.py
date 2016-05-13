@@ -51,15 +51,8 @@ def check_part(joint1, joint2, img_id, img_path, sess):
     mx = mx * img.shape[0] / 10.
     my = my * img.shape[1] / 10.
 
-    # print d
-    # print mx[0][joint1], my[0][joint1]
-    # print j1[0], j1[1]
-    # print mx[0][joint2], my[0][joint2]
-    # print j2[0], j2[1]
-    # print ''
-
     if dist(mx[0][joint1], j1[0], my[0][joint1], j1[1]) < d:
-        if dist(mx[0][joint2], j2[0], m[0][joint2], j2[1]) < d:
+        if dist(mx[0][joint2], j2[0], my[0][joint2], j2[1]) < d:
             return True
     else:
         return False
