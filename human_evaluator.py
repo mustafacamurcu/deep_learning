@@ -18,7 +18,7 @@ from VGG_Classic import VGG_Classic
 root1 = '/afs/csail.mit.edu/u/k/kocabey/Desktop/'
 root2 = '/data/vision/torralba/health-habits/other/enes/'
 
-test_file = root2 + 'HumanData/Test/'
+test_file = root2 + 'HumanData/Train/'
 
 ground_truth = np.zeros((1000,14,2))
 txt = glob.glob(test_file + 'annotations/*.txt')
@@ -55,8 +55,8 @@ def check_part(joint1, joint2, img_id, img_path, sess):
     print mx[0][joint1], my[0][joint1]
     print j1[0], j1[1]
     print '\n'
-    print mx[0][joint1], my[0][joint1]
-    print j1[0], j1[1]
+    print mx[0][joint2], my[0][joint2]
+    print j2[0], j2[1]
     print '\n'
     print '\n'
 
