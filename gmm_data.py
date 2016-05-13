@@ -2,6 +2,7 @@ import numpy as np
 import glob
 import gmm_utils
 import math
+import utils
 
 root1 = '/data/vision/torralba/health-habits/other/enes/'
 root2 = '/afs/csail.mit.edu/u/k/kocabey/Desktop/'
@@ -13,12 +14,12 @@ def read_data(file_path, length):
     all_data = np.zeros((num_data, length))
 
     for i in range(len(directories)):
+        utils.show_progress(i,len(directories))
         f = open(directories[i])
         data = f.readlines()
 
         for j in range(len(data)):
             all_data[i][j] = data[j]
-
 
     return all_data
 
@@ -27,6 +28,7 @@ def prepare_bird_representation(all_data):
     representation = np.zeros((n,2730,2))
 
     for i in range(n):
+        utils.show_progress(i,n)
         data = np.zeros((15,3))
         for j in range(15):
             data[j][0] = all_data[i][3*j]
