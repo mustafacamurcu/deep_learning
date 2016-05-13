@@ -52,6 +52,4 @@ def fit_bird_GMM(representation):
     K = 50
 
     [Mu,P,Var] = gmm_utils.init(X,K)
-    [Mu,P,Var,post,LL] = gmm_utils.mixGauss_part2(X,K,Mu,P,Var)
-
-    return [Yarin test edilecek]
+    return gmm_utils.mixGauss_part2(X,K,Mu,P,Var)
