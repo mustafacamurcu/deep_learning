@@ -24,19 +24,19 @@ x = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,224,224,3])
 net = BIRDS_VGG_ILSVRC_16_layers({'data' : x}, trainable = True)
 
 u = VGG_graph.VGG_bird_visibility_conv4_9(net)
-loss = u[0]; mean_x = u[1]; mean_y = u[2]; x_ = u[3]; y_ = u[4]; z_ = u[5]; loss2 = u[6];
+loss = u[0]; mean_x = u[1]; mean_y = u[2]; x_ = u[3]; y_ = u[4]; z_ = u[5]; loss2 = u[6]; saver = u[7];
 
 train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
-
-saver = tf.train.Saver()
 ITERATIONS = 1000000
 
 f = open(root + "Experiments/Results/VGG_bird_visibility_train_log_conv4_9.txt", "w")
 g = open(root + "Experiments/Results/VGG_bird_visibility_test_log_conv4_9.txt", "w")
 
+real_saver = tf.train.Saver()
+
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
-    saver.restore(sess,root + 'Experiments/Models/VGG_bird_model_conv4_9')
+    saver.restore(sess,root + 'Experiments/Models/VGG_bird_model_conv4_9_trained')
     while ITERATIONS > 0:
         batch_x,batch_point_x,batch_point_y,batch_existence = VGG_utils.get_next_trn_batch_bird(train_data, heatmap_size)
         _, error,l2 = sess.run( [train_step,loss,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y, z_: batch_existence } )
@@ -64,6 +64,6 @@ with tf.Session() as sess:
             g.flush()
 
         if ITERATIONS % 200 == 0:
-            saver.save(sess, root + 'Experiments/Models/VGG_bird_visibility_model_conv4_9')
+            real_saver.save(sess, root + 'Experiments/Models/VGG_bird_visibility_model_conv4_9')
 f.close()
 g.close()

@@ -117,7 +117,7 @@ def model_accuracy(sess, part_id):
         image_id = int("".join(jpg[i].split(".jpg")).split("Test/")[1]) + 1
         batch_x = np.zeros((1,224,224,3))
         batch_x[0,:,:,:,] = VGG_utils.image_preprocess(jpg[i])
-        mx,my,f_c = sess.run([mean_x,mean_y,guess], feed_dict = {x: batch_x})
+        mx,my,f_c = sess.run([mean_x,mean_y,fc], feed_dict = {x: batch_x})
 
 
         visibility = ground_truth[image_id][part_id][2]
@@ -165,7 +165,7 @@ total = tf.reduce_sum(conv, [1,2], True)
 total = tf.clip_by_value(total,1e-9,1000000000)
 conv /= total
 
-W1 = tf.Variable(tf.random_uniform([20,20,512,15],-1e-2,1e-2))
+W1 = tf.Variable(tf.random_uniform([20,20,15,15],-1e-2,1e-2))
 b1 = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
 
 fc = tf.nn.bias_add( tf.nn.conv2d(conv, W1, [1,1,1,1], 'VALID'), b1 )
@@ -178,8 +178,6 @@ for i in range(20):
     for j in range(20):
         mean_x += conv[:,i,j,:] * (i + 0.5)
         mean_y += conv[:,i,j,:] * (j + 0.5)
-
-sxx, sxy, syy = 0.1,0,0.1
 
 saver = tf.train.Saver()
 sess = tf.Session()

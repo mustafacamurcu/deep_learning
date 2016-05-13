@@ -5,13 +5,13 @@ def VGG_bird_point_detection_net(net):
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
     y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
     z_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
-    W = tf.Variable(tf.random_uniform([5,5,512,15],-1e-2,1e-2))
+    W = tf.Variable(tf.random_uniform([3,3,512,15],-1e-2,1e-2))
     b = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
 
-    W1 = tf.Variable(tf.random_uniform([14,14,512,15],-1e-2,1e-2))
-    b1 = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
+    #W1 = tf.Variable(tf.random_uniform([14,14,512,15],-1e-2,1e-2))
+    #b1 = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
 
-    fc = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W1, [1,1,1,1], 'VALID'), b1 )
+    #fc = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W1, [1,1,1,1], 'VALID'), b1 )
 
     conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W, [1,1,1,1], 'VALID'), b )
     conv = tf.nn.relu(conv)
@@ -22,15 +22,15 @@ def VGG_bird_point_detection_net(net):
 
     mean_x, mean_y = 0,0
 
-    for i in range(10):
-        for j in range(10):
+    for i in range(12):
+        for j in range(12):
             mean_x += conv[:,i,j,:] * (i + 0.5)
             mean_y += conv[:,i,j,:] * (j + 0.5)
 
     sxx, sxy, syy = 0.1,0,0.1
 
-    for i in range(10):
-        for j in range(10):
+    for i in range(12):
+        for j in range(12):
             sxx += conv[:,i,j,:] * (i - mean_x) * (i - mean_x)
             sxy += conv[:,i,j,:] * (i - mean_x) * (j - mean_y)
             syy += conv[:,i,j,:] * (j - mean_y) * (j - mean_y)
@@ -61,9 +61,8 @@ def VGG_bird_point_detection_net(net):
 
     loss = tf.reduce_sum(loss)
 
-
-    delta = 100.
-    loss +=  delta * tf.reduce_sum( tf.nn.sigmoid_cross_entropy_with_logits(fc,z_) ) # for guessing visibility
+    #delta = 1.
+    #loss +=  delta * tf.reduce_sum( tf.nn.sigmoid_cross_entropy_with_logits(fc,z_) ) # for guessing visibility
 
     loss /= VGG_utils.BATCH_SIZE
 
@@ -433,6 +432,8 @@ def VGG_bird_visibility_conv4_9(net):
     total = tf.clip_by_value(total,1e-9,1000000000)
     conv /= total
 
+    saver = tf.train.Saver()
+
     W1 = tf.Variable(tf.random_uniform([20,20,15,15],-1e-2,1e-2))
     b1 = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
 
@@ -480,8 +481,10 @@ def VGG_bird_visibility_conv4_9(net):
     loss2 /= 15 * VGG_utils.BATCH_SIZE - tf.reduce_sum(1 - z_)
 
     loss = tf.reduce_sum(loss)
-    loss += tf.reduce_sum( tf.nn.sigmoid_cross_entropy_with_logits(fc,z_) )
+    delta = 1./100
+    loss += delta * tf.reduce_sum( tf.nn.sigmoid_cross_entropy_with_logits(fc,z_) )
 
     loss /= VGG_utils.BATCH_SIZE
 
-    return loss, mean_x, mean_y, x_, y_, z_, loss2
+    return loss, mean_x, mean_y, x_, y_, z_, loss2, saver
+g
