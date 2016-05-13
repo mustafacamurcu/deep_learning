@@ -179,8 +179,6 @@ for i in range(20):
         mean_x += conv[:,i,j,:] * (i + 0.5)
         mean_y += conv[:,i,j,:] * (j + 0.5)
 
-sxx, sxy, syy = 0.1,0,0.1
-
 saver = tf.train.Saver()
 sess = tf.Session()
 saver.restore(sess, root2 + 'Experiments/Models/VGG_bird_visibility_model_conv4_9_trained')

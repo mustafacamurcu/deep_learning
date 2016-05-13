@@ -32,6 +32,8 @@ ITERATIONS = 1000000
 f = open(root + "Experiments/Results/VGG_bird_visibility_train_log_conv4_9.txt", "w")
 g = open(root + "Experiments/Results/VGG_bird_visibility_test_log_conv4_9.txt", "w")
 
+real_saver = tf.train.Saver()
+
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
     saver.restore(sess,root + 'Experiments/Models/VGG_bird_model_conv4_9_trained')
@@ -62,6 +64,6 @@ with tf.Session() as sess:
             g.flush()
 
         if ITERATIONS % 200 == 0:
-            saver.save(sess, root + 'Experiments/Models/VGG_bird_visibility_model_conv4_9')
+            real_saver.save(sess, root + 'Experiments/Models/VGG_bird_visibility_model_conv4_9')
 f.close()
 g.close()
