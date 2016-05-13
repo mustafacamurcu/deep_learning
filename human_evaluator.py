@@ -38,7 +38,7 @@ def check_part(joint1, joint2, img_id, img_path, sess):
     j1 = ground_truth[img_id][joint1]
     j2 = ground_truth[img_id][joint2]
 
-    d = dist(j1[0], j2[0], j1[1], j2[1]) / 2 #half the length of the part
+    d = dist(j1[0], j2[0], j1[1], j2[1]) #half the length of the part
 
     batch_x = np.zeros((1,224,224,3))
 
@@ -51,12 +51,12 @@ def check_part(joint1, joint2, img_id, img_path, sess):
     mx = mx * img.shape[0] / 10.
     my = my * img.shape[1] / 10.
 
-    print d
-    print mx[0][joint1], my[0][joint1]
-    print j1[0], j1[1]
-    print mx[0][joint2], my[0][joint2]
-    print j2[0], j2[1]
-    print ''
+    # print d
+    # print mx[0][joint1], my[0][joint1]
+    # print j1[0], j1[1]
+    # print mx[0][joint2], my[0][joint2]
+    # print j2[0], j2[1]
+    # print ''
 
     if dist(mx[0][joint1], j1[0], my[0][joint1], j1[1]) < d:
         if dist(mx[0][joint2], j2[0], m[0][joint2], j2[1]) < d:
@@ -66,11 +66,11 @@ def check_part(joint1, joint2, img_id, img_path, sess):
 
 def accuracy(sess, jpg):
     part_correct = 0
-    for i in range(10):
+    for i in range(100):
         if check_part(1,2,i,jpg[i],sess):
             part_correct += 1
 
-    return part_correct / 10
+    return part_correct / 100
 
 x = tf.placeholder(tf.float32, shape = [1,224,224,3])
 net = VGG_Classic({'data' : x}, trainable = True)
