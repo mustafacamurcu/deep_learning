@@ -59,11 +59,11 @@ def check_part(joint1, joint2, img_id, img_path, sess):
 
 def accuracy(sess, jpg):
     part_correct = 0
-    for i in range(100):
+    for i in range(1000):
         if check_part(1,2,i,jpg[i],sess):
             part_correct += 1
 
-    return part_correct / 100
+    return part_correct
 
 x = tf.placeholder(tf.float32, shape = [1,224,224,3])
 net = VGG_Classic({'data' : x}, trainable = True)
