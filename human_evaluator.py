@@ -45,7 +45,7 @@ def check_part(joint1, joint2, img_id, img_path, sess):
 
     if dist(mx[joint1], j1[0], mx[joint2], j2[0]) < d:
         return True
-    else
+    else:
         return False
 
 def accuracy(sess, jpg):
