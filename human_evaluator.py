@@ -7,6 +7,9 @@ import time
 import random
 import matplotlib.image as mpimg
 import glob
+import utils
+import VGG_utils
+import VGG_graph
 root = '/data/vision/torralba/health-habits/other/enes/'
 sys.path.append(root + 'VGG_Classic/')
 sys.path.append('/afs/csail.mit.edu/u/k/kocabey/Desktop/caffe-tensorflow-master/')
