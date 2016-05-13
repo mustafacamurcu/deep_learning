@@ -48,8 +48,8 @@ def check_part(joint1, joint2, img_id, img_path, sess):
 
     img = mpimg.imread(jpg[i])
 
-    mx = mx * img.shape[0] / 20.
-    my = my * img.shape[1] / 20.
+    mx = mx * img.shape[0] / 10.
+    my = my * img.shape[1] / 10.
 
     print d
     print mx[0][joint1], my[0][joint1]
