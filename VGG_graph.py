@@ -433,6 +433,8 @@ def VGG_bird_visibility_conv4_9(net):
     total = tf.clip_by_value(total,1e-9,1000000000)
     conv /= total
 
+    saver = tf.train.Saver()
+
     W1 = tf.Variable(tf.random_uniform([20,20,15,15],-1e-2,1e-2))
     b1 = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
 
@@ -484,4 +486,4 @@ def VGG_bird_visibility_conv4_9(net):
 
     loss /= VGG_utils.BATCH_SIZE
 
-    return loss, mean_x, mean_y, x_, y_, z_, loss2
+    return loss, mean_x, mean_y, x_, y_, z_, loss2, saver
