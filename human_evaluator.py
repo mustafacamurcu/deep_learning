@@ -38,7 +38,7 @@ def check_part(joint1, joint2, img_id, img_path, sess):
     j1 = ground_truth[img_id][joint1]
     j2 = ground_truth[img_id][joint2]
 
-    d = dist(j1[0], j2[0], j1[1], j2[1]) / 2 #half the length of the part
+    d = dist(j1[0], j2[0], j1[1], j2[1]) #half the length of the part
 
     batch_x = np.zeros((1,224,224,3))
 
