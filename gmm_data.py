@@ -6,7 +6,7 @@ root1 = '/data/vision/torralba/health-habits/other/enes/'
 root2 = '/afs/csail.mit.edu/u/k/kocabey/Desktop/'
 
 def read_data(file_path, length):
-    directories = glob.glob(file_path)
+    directories = glob.glob(file_path + "*.txt")
     num_data = len(directories)
     print num_data
     all_data = np.zeros((num_data, length))
