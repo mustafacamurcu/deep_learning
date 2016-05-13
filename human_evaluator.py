@@ -46,10 +46,12 @@ def check_part(joint1, joint2, img_id, img_path, sess):
 
     mx,my = sess.run([mean_x,mean_y], feed_dict = {x: batch_x})
 
-    if dist(mx[joint1], j1[0], mx[joint2], j2[0]) < d:
-        return True
-    else:
-        return False
+    print mx
+    print mx.shape()
+    # if dist(mx[joint1], j1[0], mx[joint2], j2[0]) < d:
+    #     return True
+    # else:
+    #     return False
 
 def accuracy(sess, jpg):
     part_correct = 0
