@@ -21,6 +21,8 @@ def read_data(file_path, length):
         for j in range(len(data)):
             all_data[i][j] = data[j]
 
+    print "\n"
+
     return all_data
 
 def prepare_bird_representation(all_data):
@@ -40,7 +42,7 @@ def prepare_bird_representation(all_data):
             for k in range(15):
                 for l in range(15):
                     if j != k and j != l and k != l:
-                        a = data[j] - data[k]
+                        a = [data[j][0] - data[k][0], data[j][1] - data[k][1]]
                         b = math.sqrt( (data[k][0] - data[l][0]) ** 2 + (data[k][1] - data[l][1]) ** 2 )
                         representation[i][ctr] = a/b
 
@@ -48,6 +50,7 @@ def prepare_bird_representation(all_data):
                             representation[i][ctr] = (0,0)
 
                         ctr += 1
+    print "\n"
     return representation
 
 
