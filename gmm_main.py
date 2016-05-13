@@ -8,4 +8,4 @@ representation = gd.prepare_bird_representation(all_data)
 
 print "representation ready!"
 
-print gd.fit_bird_GMM(representation)
+print gd.fit_bird_GMM(representation)[3]
