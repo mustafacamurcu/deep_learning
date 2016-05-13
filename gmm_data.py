@@ -45,8 +45,8 @@ def prepare_bird_representation(all_data):
                         a = [data[j][0] - data[k][0], data[j][1] - data[k][1]]
                         b = math.sqrt( (data[k][0] - data[l][0]) ** 2 + (data[k][1] - data[l][1]) ** 2 )
 
-                        representation[i][ctr][0] = a[0]/b[0]
-                        representation[i][ctr][1] = a[1]/b[1]
+                        representation[i][ctr][0] = a[0]/b
+                        representation[i][ctr][1] = a[1]/b
 
                         if data[j][2] == 0 or data[k][2] == 0 or data[l][2] == 0:
                             representation[i][ctr] = (0,0)
