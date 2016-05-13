@@ -165,7 +165,7 @@ total = tf.reduce_sum(conv, [1,2], True)
 total = tf.clip_by_value(total,1e-9,1000000000)
 conv /= total
 
-W1 = tf.Variable(tf.random_uniform([20,20,512,15],-1e-2,1e-2))
+W1 = tf.Variable(tf.random_uniform([20,20,15,15],-1e-2,1e-2))
 b1 = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
 
 fc = tf.nn.bias_add( tf.nn.conv2d(conv, W1, [1,1,1,1], 'VALID'), b1 )
