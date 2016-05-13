@@ -53,11 +53,11 @@ def check_part(joint1, joint2, img_id, img_path, sess):
 
 def accuracy(sess, jpg):
     part_correct = 0
-    for i in range(1):
+    for i in range(10):
         if check_part(1,2,i,jpg[i],sess):
             part_correct += 1
 
-    return part_correct / len(jpg)
+    return part_correct / 10
 
 x = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,224,224,3])
 net = VGG_Classic({'data' : x}, trainable = True)
@@ -83,4 +83,4 @@ saver = tf.train.Saver()
 sess = tf.Session()
 saver.restore(sess, root2 + 'Experiments/Models/VGG_human_model_conv5_2')
 
-print accuracy
+print accuracy(sess, jpg)
