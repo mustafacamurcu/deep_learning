@@ -482,7 +482,8 @@ def VGG_bird_visibility_conv4_9(net):
     loss2 /= 15 * VGG_utils.BATCH_SIZE - tf.reduce_sum(1 - z_)
 
     loss = tf.reduce_sum(loss)
-    loss += tf.reduce_sum( tf.nn.sigmoid_cross_entropy_with_logits(fc,z_) )
+    delta = 1./100
+    loss += delta * tf.reduce_sum( tf.nn.sigmoid_cross_entropy_with_logits(fc,z_) )
 
     loss /= VGG_utils.BATCH_SIZE
 
