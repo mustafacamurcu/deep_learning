@@ -79,6 +79,7 @@ for i in range(10):
         mean_x += conv[:,i,j,:] * (i + 0.5)
         mean_y += conv[:,i,j,:] * (j + 0.5)
 
+saver = tf.train.Saver()
 sess = tf.Session()
 saver.restore(sess, root2 + 'Experiments/Models/VGG_human_model_conv5_2')
 
