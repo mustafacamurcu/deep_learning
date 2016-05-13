@@ -13,6 +13,8 @@ sys.path.append(root + 'VGG_Bird/')
 sys.path.append('/afs/csail.mit.edu/u/k/kocabey/Desktop/caffe-tensorflow-master/')
 from VGG_Bird import BIRDS_VGG_ILSVRC_16_layers
 
+heatmap_size = 12
+
 train_jpg, train_txt = utils.bird_random_slice_directories("train")
 test_jpg, test_txt = utils.bird_random_slice_directories("test")
 train_data = utils.import_bird_point_data(train_jpg,train_txt)
@@ -29,15 +31,15 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
 saver = tf.train.Saver()
 ITERATIONS = 1000000
 
-f = open(root + "Experiments/Results/VGG_bird_train_log_conv5_5.txt", "w")
-g = open(root + "Experiments/Results/VGG_bird_test_log_conv5_5.txt", "w")
+f = open(root + "Experiments/Results/VGG_bird_train_log_conv5_3.txt", "w")
+g = open(root + "Experiments/Results/VGG_bird_test_log_conv5_3.txt", "w")
 
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
     net.load(root + "VGG_Bird/VGG_Bird.npy", sess)
     print "VGG Network has been successfully uploaded!"
     while ITERATIONS > 0:
-        batch_x,batch_point_x,batch_point_y,batch_existence = VGG_utils.get_next_trn_batch_bird(train_data)
+        batch_x,batch_point_x,batch_point_y,batch_existence = VGG_utils.get_next_trn_batch_bird(train_data,12)
         _, error,l2 = sess.run( [train_step,loss,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y, z_: batch_existence } )
 
         ITERATIONS -= 1
@@ -53,7 +55,7 @@ with tf.Session() as sess:
             f.flush()
             error = 0; l2 = 0;
             for i in range(10):
-                batch_x,batch_point_x,batch_point_y,batch_existence = VGG_utils.get_next_trn_batch_bird(test_data)
+                batch_x,batch_point_x,batch_point_y,batch_existence = VGG_utils.get_next_trn_batch_bird(test_data,12)
                 a = sess.run( [loss,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y, z_: batch_existence } )
                 error += a[0]; l2 += a[1]
             error /= 10.; l2 /= 10.;
@@ -63,6 +65,6 @@ with tf.Session() as sess:
             g.flush()
 
         if ITERATIONS % 200 == 0:
-            saver.save(sess, root + 'Experiments/Models/VGG_bird_model_conv5_5')
+            saver.save(sess, root + 'Experiments/Models/VGG_bird_model_conv5_3')
 f.close()
 g.close()
