@@ -59,63 +59,63 @@ def check_part(joint1, joint2, img_id, img_path, sess):
 
 def accuracy(sess, jpg):
     r_lower_leg = 0
-    for i in range(len(jpg):
+    for i in range(len(jpg)):
         if check_part(0,1,i,jpg[i],sess):
             part_correct += 1
 
     print r_lower_leg / float(len(jpg))
 
     r_upper_leg = 0
-    for i in range(len(jpg):
+    for i in range(len(jpg)):
         if check_part(1,2,i,jpg[i],sess):
             r_upper_leg += 1
 
     print r_upper_leg / float(len(jpg))
 
     l_upper_leg = 0
-    for i in range(len(jpg):
+    for i in range(len(jpg)):
         if check_part(3,4,i,jpg[i],sess):
             l_upper_leg += 1
 
     print l_upper_leg / float(len(jpg))
 
     l_lower_leg = 0
-    for i in range(len(jpg):
+    for i in range(len(jpg)):
         if check_part(4,5,i,jpg[i],sess):
             l_lower_leg += 1
 
     print l_lower_leg / float(len(jpg))
 
     r_fore_arm = 0
-    for i in range(len(jpg):
+    for i in range(len(jpg)):
         if check_part(6,7,i,jpg[i],sess):
             r_fore_arm += 1
 
     print r_fore_arm / float(len(jpg))
 
     r_upper_arm = 0
-    for i in range(len(jpg):
+    for i in range(len(jpg)):
         if check_part(7,8,i,jpg[i],sess):
             r_upper_arm += 1
 
     print r_lower_leg / float(len(jpg))
 
     l_upper_arm = 0
-    for i in range(len(jpg):
+    for i in range(len(jpg)):
         if check_part(9,10,i,jpg[i],sess):
             l_upper_arm += 1
 
     print l_upper_arm / float(len(jpg))
 
     l_fore_arm = 0
-    for i in range(len(jpg):
+    for i in range(len(jpg)):
         if check_part(10,11,i,jpg[i],sess):
             l_fore_arm += 1
 
     print l_fore_arm / float(len(jpg))
 
     head = 0
-    for i in range(len(jpg):
+    for i in range(len(jpg)):
         if check_part(12,13,i,jpg[i],sess):
             head += 1
 
