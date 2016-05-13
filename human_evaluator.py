@@ -61,7 +61,7 @@ def accuracy(sess, jpg):
     r_lower_leg = 0
     for i in range(len(jpg)):
         if check_part(0,1,i,jpg[i],sess):
-            part_correct += 1
+            r_lower_leg += 1
 
     print r_lower_leg / float(len(jpg))
 
