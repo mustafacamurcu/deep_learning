@@ -36,7 +36,7 @@ def dist(x1, x2, y1 ,y2):
 def check_part(joint1, joint2, img_id, img_path, sess):
     global ground_truth
     j1 = ground_truth[img_id][joint1]
-    j2 = ground_truth[img_id][joint1]
+    j2 = ground_truth[img_id][joint2]
 
     d = dist(j1[0], j2[0], j1[1], j2[1]) / 2 #half the length of the part
 
@@ -46,12 +46,16 @@ def check_part(joint1, joint2, img_id, img_path, sess):
 
     mx,my = sess.run([mean_x,mean_y], feed_dict = {x: batch_x})
 
-    print mx
-    print mx.shape()
-    # if dist(mx[joint1], j1[0], mx[joint2], j2[0]) < d:
-    #     return True
-    # else:
-    #     return False
+    img = mpimg.imread(jpg[i])
+
+    mx = mx * img.shape[0] / 20.
+    my = my * img.shape[1] / 20.
+
+    if dist(mx[0][joint1], j1[0], my[0][joint1], j1[1]) < d:
+        if dist(mx[0][joint2], j2[0], m[0][joint2], j2[1]) < d:
+        return True
+    else:
+        return False
 
 def accuracy(sess, jpg):
     part_correct = 0
