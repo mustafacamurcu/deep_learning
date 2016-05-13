@@ -59,7 +59,7 @@ def accuracy(sess, jpg):
 
     return part_correct / 10
 
-x = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,224,224,3])
+x = tf.placeholder(tf.float32, shape = [1,224,224,3])
 net = VGG_Classic({'data' : x}, trainable = True)
 
 W = tf.Variable(tf.random_uniform([5,5,512,14],-1e-2,1e-2))
