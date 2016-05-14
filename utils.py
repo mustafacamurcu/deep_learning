@@ -126,19 +126,16 @@ def import_MTFL_data(jpg,txt):
 def import_LFPW_data(jpg,txt):
     print len(jpg), " ", len(txt)
     all_data = []
-    print "loading data..."
     for i in range(len(txt)):
-        show_progress(i,len(txt))
         f = open(txt[i],"r")
         data = f.readlines()
-        temp = list(data)
-        for j in range(0,10):
-            data[j] = int(temp[j])
-        datam = []
-        datam.append(data)
-        directory = jpg[i]
-        all_data.append( (directory , datam) )
-    print "\n"
+        temp = []
+        for j in range(len(data)):
+            t2 = data[j].split()
+            for k in range(2):
+                t2[k] = float(t2[k])
+            temp.append(t2)
+        all_data.append( (jpg[i],temp) )
     return all_data
 
 
