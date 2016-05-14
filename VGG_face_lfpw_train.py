@@ -13,10 +13,10 @@ sys.path.append(root + 'VGG_Classic/')
 sys.path.append('/afs/csail.mit.edu/u/k/kocabey/Desktop/caffe-tensorflow-master/')
 from VGG_Classic import VGG_Classic
 
-train_jpg, train_txt = utils.MTFL_directories("train")
-test_jpg, test_txt = utils.MTFL_directories("test")
-train_data = utils.import_MTFL_data(train_jpg,train_txt)
-test_data  = utils.import_MTFL_data(test_jpg,test_txt)
+train_jpg, train_txt = utils.LFPW_directories("train")
+test_jpg, test_txt = utils.LFPW_directories("test")
+train_data = utils.import_LFPW_data(train_jpg,train_txt)
+test_data  = utils.import_LFPW_data(test_jpg,test_txt)
 
 x = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,224,224,3])
 net = VGG_Classic({'data' : x}, trainable = True)

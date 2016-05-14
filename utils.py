@@ -123,6 +123,25 @@ def import_MTFL_data(jpg,txt):
     print "\n"
     return all_data
 
+def import_LFPW_data(jpg,txt):
+    print len(jpg), " ", len(txt)
+    all_data = []
+    print "loading data..."
+    for i in range(len(txt)):
+        show_progress(i,len(txt))
+        f = open(txt[i],"r")
+        data = f.readlines()
+        temp = list(data)
+        for j in range(0,10):
+            data[j] = int(temp[j])
+        datam = []
+        datam.append(data)
+        directory = jpg[i]
+        all_data.append( (directory , datam) )
+    print "\n"
+    return all_data
+
+
 def show_progress(k,N):
     num_bars = 100
     u = (k * num_bars) / N
