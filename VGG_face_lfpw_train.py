@@ -21,7 +21,7 @@ test_data  = utils.import_LFPW_data(test_jpg,test_txt)
 x = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,224,224,3])
 net = VGG_Classic({'data' : x}, trainable = True)
 
-u = VGG_graph.VGG_face_point_detection_net(net)
+u = VGG_graph.VGG_face_68_point_detection_net(net)
 loss = u[0]; mean_x = u[1]; mean_y = u[2]; x_ = u[3]; y_ = u[4]; loss2 = u[5];
 
 train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
