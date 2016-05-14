@@ -40,6 +40,15 @@ def MTFL_directories(name):
         jpg = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/CelebData/SquareTest/Images/*.jpg') )
     return jpg,txt
 
+def LFPW_directories(name):
+    if name == "train":
+        txt = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/LFPWData/Train/annotations/*.txt') )
+        jpg = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/LFPWData/Train/images/*.jpg') )
+    if name == "test":
+        txt = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/LFPWData/Test/annotations/*.txt') )
+        jpg = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/LFPWData/Test/images/*.jpg') )
+    return jpg,txt
+
 def human_random_slice_directories(name):
     if name == "train":
         txt = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/HumanData/Train/annotations/*.txt') )

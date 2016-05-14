@@ -89,6 +89,26 @@ def get_next_trn_batch_face(all_data):
 
     return (batch_x,batch_point_x,batch_point_y)
 
+def get_next_trn_batch_face_lfpw(all_data):
+    trn_indices = []
+    for i in range(BATCH_SIZE):
+        trn_indices.append(random.randint(0,len(all_data) - 1))
+    batch_x = np.zeros((BATCH_SIZE,224,224,3))
+
+    for i in range(BATCH_SIZE):
+        batch_x[i,:,:,:,] = image_preprocess( all_data[trn_indices[i]][0] )
+    batch_point_x = np.zeros((BATCH_SIZE,68))
+    batch_point_y = np.zeros((BATCH_SIZE,68))
+
+    for i in range(BATCH_SIZE):
+        (aa,bb,cc) = imread( all_data[trn_indices[i]][0] ).shape
+        for j in range(68):
+            batch_point_x[i][j] = all_data[trn_indices[i]][1][0][ 2*j ] * 10 / float(aa)
+            batch_point_y[i][j] = all_data[trn_indices[i]][1][0][2*j+1] * 10 / float(aa)
+
+    return (batch_x,batch_point_x,batch_point_y)
+
+
 def get_next_trn_batch_scratch_face(all_data):
     trn_indices = []
     for i in range(BATCH_SIZE):
