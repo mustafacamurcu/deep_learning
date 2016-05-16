@@ -527,7 +527,7 @@ def VGG_face_68_point_detection_net(net):
 
     #variance should also be penalized, otherwise it does not learn anything useful.
 
-    eta = 0.001
+    eta = 0.0001
     loss += eta * (sxx + syy)
 
     loss2 = tf.sqrt( (mean_x - x_) * (mean_x - x_) +
