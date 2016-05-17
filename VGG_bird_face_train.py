@@ -29,8 +29,8 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
 saver = tf.train.Saver()
 ITERATIONS = 1000000
 
-f = open(root + "Experiments/Results/VGG_bird_face_train_log_conv5_5_new.txt", "w")
-g = open(root + "Experiments/Results/VGG_bird_face_test_log_conv5_5_new.txt", "w")
+f = open(root + "Experiments/Results/VGG_face_300w_train_log_conv5_5_new.txt", "w")
+g = open(root + "Experiments/Results/VGG_face_300w_train_log_conv5_5_new.txt", "w")
 
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
