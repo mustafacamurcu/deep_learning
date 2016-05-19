@@ -64,6 +64,6 @@ with tf.Session() as sess:
             g.flush()
 
         if ITERATIONS % 200 == 0:
-            saver.save(sess, root + 'Experiments/Models/VGG_face_helen_model_conv5_5')
+            saver.save(sess, root + 'Experiments/Models/VGG_face_helen_finetune_model_conv5_5')
 f.close()
 g.close()
