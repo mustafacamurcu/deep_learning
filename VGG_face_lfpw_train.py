@@ -27,6 +27,9 @@ u = VGG_graph.VGG_face_68_point_detection_net(net)
 loss = u[0]; mean_x = u[1]; mean_y = u[2]; x_ = u[3]; y_ = u[4]; loss2 = u[5];
 
 train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
+
+real_saver = tf.train.Saver()
+
 ITERATIONS = 1000000
 
 f = open(root + "Experiments/Results/VGG_face_lfpw_train_log_conv5_5.txt", "w")
@@ -62,6 +65,6 @@ with tf.Session() as sess:
             g.flush()
 
         if ITERATIONS % 200 == 0:
-            saver.save(sess, root + 'Experiments/Models/VGG_face_lfpw_finetune_model_conv5_5')
+            real_saver.save(sess, root + 'Experiments/Models/VGG_face_lfpw_finetune_model_conv5_5')
 f.close()
 g.close()
