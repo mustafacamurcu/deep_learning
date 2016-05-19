@@ -21,12 +21,13 @@ test_data  = utils.import_COFW_data(test_jpg,test_txt)
 x = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,224,224,3])
 net = VGG_Classic({'data' : x}, trainable = True)
 
+saver = tf.train.Saver()
+
 u = VGG_graph.VGG_face_29_point_detection_net(net)
 loss = u[0]; mean_x = u[1]; mean_y = u[2]; x_ = u[3]; y_ = u[4]; loss2 = u[5];
 
 train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
 
-saver = tf.train.Saver()
 ITERATIONS = 1000000
 
 f = open(root + "Experiments/Results/VGG_face_COFW_train_log_conv5_5.txt", "w")
@@ -34,7 +35,8 @@ g = open(root + "Experiments/Results/VGG_face_COFW_test_log_conv5_5.txt", "w")
 
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
-    print "VGG Network has been successfully uploaded!"
+    saver(sess, "/data/vision/torralba/health-habits/other/enes/Experiments/Models/VGG_face_scratch_model_conv5_5_trained_MAY16")
+
     while ITERATIONS > 0:
         batch_x,batch_point_x,batch_point_y = VGG_utils.get_next_trn_batch_face_COFW(train_data)
         _, error,mx,my,l2 = sess.run( [train_step,loss,mean_x,mean_y,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y } )

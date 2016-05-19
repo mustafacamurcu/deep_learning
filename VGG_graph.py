@@ -566,9 +566,9 @@ def VGG_face_29_point_detection_net(net):
 
     for i in range(10):
         for j in range(10):
-            sxx += conv[:,i,j,:] * (i - mean_x) * (i - mean_x)
-            sxy += conv[:,i,j,:] * (i - mean_x) * (j - mean_y)
-            syy += conv[:,i,j,:] * (j - mean_y) * (j - mean_y)
+            sxx += conv[:,i,j,:] * (i + 0.5 - mean_x) * (i + 0.5 - mean_x)
+            sxy += conv[:,i,j,:] * (i + 0.5 - mean_x) * (j + 0.5 - mean_y)
+            syy += conv[:,i,j,:] * (j + 0.5 - mean_y) * (j + 0.5 - mean_y)
 
     k = 1. / (sxx * syy - sxy * sxy)
     a =  syy * k
