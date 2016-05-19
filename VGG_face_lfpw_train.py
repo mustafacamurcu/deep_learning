@@ -34,7 +34,7 @@ g = open(root + "Experiments/Results/VGG_face_lfpw_test_log_conv5_5.txt", "w")
 
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
-    saver.restore(sess, root + 'Experiments/Models/VGG_face_scratch_model_conv5_5_trained_MAY16'
+    saver.restore(sess, root + 'Experiments/Models/VGG_face_scratch_model_conv5_5_trained_MAY16')
     while ITERATIONS > 0:
         batch_x,batch_point_x,batch_point_y = VGG_utils.get_next_trn_batch_face_lfpw(train_data)
         _, error,mx,my,l2 = sess.run( [train_step,loss,mean_x,mean_y,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y } )
