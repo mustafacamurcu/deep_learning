@@ -359,6 +359,60 @@ def VGG_face_scratch_point_detection_net(net):
 
     return loss, mean_x, mean_y, x_, y_, loss2
 
+def VGG_face_scratch_point_detection_net_old(net):
+    x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
+    y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
+    W = tf.Variable(tf.random_uniform([15,15,256,5],-1e-2,1e-2))
+    b = tf.Variable(tf.random_uniform([5],-1e-2,1e-2))
+    conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv3_2'], W, [1,1,1,1], 'VALID'), b )
+    conv = tf.nn.relu(conv)
+
+    total = tf.reduce_sum(conv, [1,2], True)
+    total = tf.clip_by_value(total,1e-9,1000000000)
+    conv /= total
+
+    mean_x, mean_y = 0,0
+
+    for i in range(42):
+        for j in range(42):
+            mean_x += conv[:,i,j,:] * (i + 0.5)
+            mean_y += conv[:,i,j,:] * (j + 0.5)
+
+
+    sxx, sxy, syy = 0.1,0,0.1
+
+    for i in range(42):
+        for j in range(42):
+            sxx += conv[:,i,j,:] * (i + 0.5 - mean_x) * (i + 0.5 - mean_x)
+            sxy += conv[:,i,j,:] * (i - mean_x) * (j - mean_y)
+            syy += conv[:,i,j,:] * (j - mean_y) * (j - mean_y)
+
+    k = 1. / (sxx * syy - sxy * sxy)
+    a =  syy * k
+    b = -sxy * k
+    d =  sxx * k
+
+    loss = a * (mean_x - x_) * (mean_x - x_) + \
+           d * (mean_y - y_) * (mean_y - y_) + \
+           2 * b * (mean_x - x_) * (mean_y - y_)
+
+    #variance should also be penalized, otherwise it does not learn anything useful.
+
+    eta = 0.001
+    loss += eta * (sxx+syy)
+
+    loss2 = tf.sqrt( (mean_x - x_) * (mean_x - x_) +
+                     (mean_y - y_) * (mean_y - y_) )
+
+    loss2 = tf.reduce_sum(loss2)
+    loss2 /= VGG_utils.BATCH_SIZE
+    loss2 /= 5.
+    loss = tf.reduce_sum(loss)
+    loss /= VGG_utils.BATCH_SIZE
+    loss /= 5.
+
+    return loss, mean_x, mean_y, x_, y_, loss2
+
 def VGG_face_scratch_point_detection_net_vanilla(net):
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
     y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
