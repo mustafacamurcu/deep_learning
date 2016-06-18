@@ -308,7 +308,7 @@ def VGG_bird_multilayer(net):
 def VGG_face_scratch_point_detection_net(net):
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
     y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
-    W = tf.Variable(tf.random_uniform([5,5,256,5],-1e-2,1e-2))
+    W = tf.Variable(tf.random_uniform([5,5,512,5],-1e-2,1e-2))
     b = tf.Variable(tf.random_uniform([5],-1e-2,1e-2))
     conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W, [1,1,1,1], 'VALID'), b )
     conv = tf.nn.relu(conv)

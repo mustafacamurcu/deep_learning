@@ -179,8 +179,8 @@ def get_next_trn_batch_scratch_face(all_data):
     for i in range(BATCH_SIZE):
         (aa,bb,cc) = imread( all_data[trn_indices[i]][0] ).shape
         for j in range(5):
-            batch_point_x[i][j] = all_data[trn_indices[i]][1][0][ 2*j ] * 42 / float(aa)
-            batch_point_y[i][j] = all_data[trn_indices[i]][1][0][2*j+1] * 42 / float(aa)
+            batch_point_x[i][j] = all_data[trn_indices[i]][1][0][ 2*j ] * 10 / float(aa)
+            batch_point_y[i][j] = all_data[trn_indices[i]][1][0][2*j+1] * 10 / float(aa)
 
     return (batch_x,batch_point_x,batch_point_y)
 
