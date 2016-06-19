@@ -423,8 +423,8 @@ def VGG_face_scratch_point_detection_net_GMM(net):
 
                         a = landmarks[i,:] - landmarks[j,:]
 
-                        b = tf.sqrt( (landmarks[i,0] - landmarks[k,0]) ** 2 +
-                                       (landmarks[i,1] - landmarks[k,1]) ** 2 )
+                        b = tf.sqrt( tf.square(landmarks[i,0] - landmarks[k,0]) +
+                                       tf.square(landmarks[i,1] - landmarks[k,1]) )
 
                         embedding.append(a[0] / b)
                         embedding.append(a[1] / b)
