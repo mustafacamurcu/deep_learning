@@ -414,6 +414,49 @@ def VGG_face_scratch_point_detection_net_old(net):
     return loss, mean_x, mean_y, x_, y_, loss2
 
 def VGG_face_scratch_point_detection_net_GMM(net):
+    def calculate_embedding(landmarks):
+        embedding = []
+        for i in range(len(landmarks)):
+            for j in range(len(landmarks)):
+                for k in range(len(landmarks)):
+                    if i != j and j != k and i != k:
+
+                        a = landmarks[i] - landmarks[j]
+
+                        b = math.sqrt( (landmarks[i][0] - landmarks[k][0]) ** 2 +
+                                       (landmarks[i][1] - landmarks[k][1]) ** 2 )
+
+                        embedding.append(a[0] / b)
+                        embedding.append(a[1] / b)
+
+        return tf.pack(embedding)
+    def logsumexp_tf(args,n):
+        mx = tf.reduce_max(args,reduction_indices=[0])
+        sum_ = 0
+        for i in range(n):
+            sum_ += tf.exp(args[i]-mx)
+
+        sum_ = tf.log(sum_)
+        sum_ += mx
+        return sum_
+    def negative_log_likelihood(weights, means, covars, x):
+
+        n_components = weights.shape[0]
+        d = means.shape[0]
+        args = []
+
+        for i in range(n_components):
+            ret = 0
+            ret +=  tf.log(weights[i])
+            ret += -1/2. * tf.reduce_sum( tf.log(covars[i]) )
+            ret += -d/2. * tf.log(np.asarray(2.).astype(np.float32) * np.asarray(np.pi).astype(np.float32))
+            ret += -1/2. * tf.reduce_sum( tf.square(x - means[i]) * (1./covars[i]) )
+            args.append( ret )
+
+        args = tf.pack(args)
+
+        return -logsumexp_tf(args, n_components)
+
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
     y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
     W = tf.Variable(tf.random_uniform([5,5,512,5],-1e-2,1e-2))
@@ -485,48 +528,6 @@ def VGG_face_scratch_point_detection_net_GMM(net):
     loss /= 5.
 
     return loss, mean_x, mean_y, x_, y_, loss2
-    def calculate_embedding(landmarks):
-        embedding = []
-        for i in range(len(landmarks)):
-            for j in range(len(landmarks)):
-                for k in range(len(landmarks)):
-                    if i != j and j != k and i != k:
-
-                        a = landmarks[i] - landmarks[j]
-
-                        b = math.sqrt( (landmarks[i][0] - landmarks[k][0]) ** 2 +
-                                       (landmarks[i][1] - landmarks[k][1]) ** 2 )
-
-                        embedding.append(a[0] / b)
-                        embedding.append(a[1] / b)
-
-        return tf.pack(embedding)
-    def logsumexp_tf(args,n):
-        mx = tf.reduce_max(args,reduction_indices=[0])
-        sum_ = 0
-        for i in range(n):
-            sum_ += tf.exp(args[i]-mx)
-
-        sum_ = tf.log(sum_)
-        sum_ += mx
-        return sum_
-    def negative_log_likelihood(weights, means, covars, x):
-
-        n_components = weights.shape[0]
-        d = means.shape[0]
-        args = []
-
-        for i in range(n_components):
-            ret = 0
-            ret +=  tf.log(weights[i])
-            ret += -1/2. * tf.reduce_sum( tf.log(covars[i]) )
-            ret += -d/2. * tf.log(np.asarray(2.).astype(np.float32) * np.asarray(np.pi).astype(np.float32))
-            ret += -1/2. * tf.reduce_sum( tf.square(x - means[i]) * (1./covars[i]) )
-            args.append( ret )
-
-        args = tf.pack(args)
-
-        return -logsumexp_tf(args, n_components)
 
 def VGG_human_point_detection_net(net):
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,14])
