@@ -1,6 +1,6 @@
 import tensorflow as tf
 import VGG_utils
-
+import numpy as np
 def VGG_bird_point_detection_net(net):
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
     y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
@@ -467,7 +467,7 @@ def VGG_face_scratch_point_detection_net_GMM(net):
     y = tf.concat(2,[mean_x, mean_y])
 
     for i in range(VGG_utils.BATCH_SIZE):
-        u = y[i,:]
+        u = y[i,:,:]
         e = calculate_embedding(u)
         nll = negative_log_likelihood(w,m,c,e)
         structural_loss += nll
