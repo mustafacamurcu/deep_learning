@@ -424,7 +424,7 @@ def VGG_face_scratch_point_detection_net_GMM(net):
                         a = landmarks[i,:] - landmarks[j,:]
 
                         b = tf.sqrt( tf.square(landmarks[i,0] - landmarks[k,0]) +
-                                       tf.square(landmarks[i,1] - landmarks[k,1]) )
+                                       tf.square(landmarks[i,1] - landmarks[k,1]) ) + 0.001
 
                         embedding.append(a[0] / b)
                         embedding.append(a[1] / b)
@@ -521,7 +521,7 @@ def VGG_face_scratch_point_detection_net_GMM(net):
         nll = negative_log_likelihood(w,m,c,e)
         structural_loss += nll
 
-    beta = 0.1
+    beta = 0.000001
     loss += beta * structural_loss
     loss = tf.reduce_sum(loss)
     loss /= VGG_utils.BATCH_SIZE
