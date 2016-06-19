@@ -421,10 +421,10 @@ def VGG_face_scratch_point_detection_net_GMM(net):
                 for k in range(5):
                     if i != j and j != k and i != k:
 
-                        a = landmarks[i] - landmarks[j]
+                        a = landmarks[i,:] - landmarks[j,:]
 
-                        b = math.sqrt( (landmarks[i][0] - landmarks[k][0]) ** 2 +
-                                       (landmarks[i][1] - landmarks[k][1]) ** 2 )
+                        b = math.sqrt( (landmarks[i,0] - landmarks[k,0]) ** 2 +
+                                       (landmarks[i,1] - landmarks[k,1]) ** 2 )
 
                         embedding.append(a[0] / b)
                         embedding.append(a[1] / b)
