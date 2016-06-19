@@ -416,9 +416,9 @@ def VGG_face_scratch_point_detection_net_old(net):
 def VGG_face_scratch_point_detection_net_GMM(net):
     def calculate_embedding(landmarks):
         embedding = []
-        for i in range(len(landmarks)):
-            for j in range(len(landmarks)):
-                for k in range(len(landmarks)):
+        for i in range(5):
+            for j in range(5):
+                for k in range(5):
                     if i != j and j != k and i != k:
 
                         a = landmarks[i] - landmarks[j]
