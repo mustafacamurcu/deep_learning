@@ -498,6 +498,12 @@ def VGG_face_scratch_point_detection_net_GMM(net):
     eta = 0.00001
     loss += eta * ( sxx*syy - sxy*sxy )
 
+    loss2 = tf.sqrt( (mean_x - x_) * (mean_x - x_) +
+                     (mean_y - y_) * (mean_y - y_) )
+    loss2 = tf.reduce_sum(loss2)
+    loss2 /= VGG_utils.BATCH_SIZE
+    loss2 /= 5.
+
     #structural loss
     w = np.load('weights.npy')
     m = np.load('means.npy')
@@ -517,12 +523,6 @@ def VGG_face_scratch_point_detection_net_GMM(net):
 
     beta = 0.1
     loss += beta * structural_loss
-
-    loss2 = tf.sqrt( (mean_x - x_) * (mean_x - x_) +
-                     (mean_y - y_) * (mean_y - y_) )
-    loss2 = tf.reduce_sum(loss2)
-    loss2 /= VGG_utils.BATCH_SIZE
-    loss2 /= 5.
     loss = tf.reduce_sum(loss)
     loss /= VGG_utils.BATCH_SIZE
     loss /= 5.
