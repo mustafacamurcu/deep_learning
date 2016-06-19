@@ -450,7 +450,7 @@ def VGG_face_scratch_point_detection_net_GMM(net):
             ret += tf.log(np.asarray(weights[i]).astype(np.float32))
             ret += np.asarray(-1/2.).astype(np.float32) * tf.reduce_sum( tf.log(np.asarray(covars[i]).astype(np.float32)) )
             ret += np.asarray(-d/2.).astype(np.float32) * tf.log(np.asarray(2.).astype(np.float32) * np.asarray(np.pi).astype(np.float32))
-            ret += np.asarray(-1/2.).astype(np.float32) * tf.reduce_sum( tf.square(x - np.asarray(means[i]).astype(np.float32)) * (1./np.asarray(covars[i]).astype(np.float32))) )
+            ret += np.asarray(-1/2.).astype(np.float32) * tf.reduce_sum( tf.square(x - np.asarray(means[i]).astype(np.float32)) * (1./np.asarray(covars[i]).astype(np.float32)))
             args.append( ret )
 
         args = tf.pack(args)
