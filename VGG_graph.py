@@ -521,7 +521,7 @@ def VGG_face_scratch_point_detection_net_GMM(net):
         nll = negative_log_likelihood(w,m,c,e)
         structural_loss += nll
 
-    beta = 0.000001
+    beta = 0.00000001
     loss += beta * structural_loss
     loss = tf.reduce_sum(loss)
     loss /= VGG_utils.BATCH_SIZE
