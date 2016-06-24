@@ -13,10 +13,10 @@ sys.path.append(root + 'VGG_Classic/')
 sys.path.append('/afs/csail.mit.edu/u/k/kocabey/Desktop/caffe-tensorflow-master/')
 from VGG_Classic import VGG_Classic
 
-train_jpg, train_txt = utils.MTFL_directories("train")
-test_jpg, test_txt = utils.MTFL_directories("test")
-train_data = utils.import_MTFL_data(train_jpg,train_txt)
-test_data  = utils.import_MTFL_data(test_jpg,test_txt)
+#train_jpg, train_txt = utils.MTFL_directories("train")
+#test_jpg, test_txt = utils.MTFL_directories("test")
+#train_data = utils.import_MTFL_data(train_jpg,train_txt)
+#test_data  = utils.import_MTFL_data(test_jpg,test_txt)
 
 x = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,224,224,3])
 net = VGG_Classic({'data' : x}, trainable = True)
@@ -29,13 +29,15 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
 saver = tf.train.Saver()
 ITERATIONS = 1000000
 
-f = open(root + "Experiments/Results/VGG_face_scratch_train_log_conv5_5.txt", "w")
-g = open(root + "Experiments/Results/VGG_face_scratch_test_log_conv5_5.txt", "w")
+f = open(root + "Experiments/Results/VGG_ignore_face_scratch_train_log_conv5_5.txt", "w")
+g = open(root + "Experiments/Results/VGG_ignore_face_scratch_test_log_conv5_5.txt", "w")
 
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
-    #net.load(root + "VGG_Classic/VGG_Classic.npy", sess)
+    net.load(root + "VGG_Classic/VGG_Classic.npy", sess)
     print "VGG Network has been successfully uploaded!"
+    saver.save(sess, root + 'Experiments/Models/VGG_weights')
+    raise IndexError
     while ITERATIONS > 0:
         batch_x,batch_point_x,batch_point_y = VGG_utils.get_next_trn_batch_face(train_data)
         _, error,mx,my,l2 = sess.run( [train_step,loss,mean_x,mean_y,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y } )

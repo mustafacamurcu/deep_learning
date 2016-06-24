@@ -1,6 +1,6 @@
 import tensorflow as tf
 import VGG_utils
-
+import numpy as np
 def VGG_bird_point_detection_net(net):
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
     y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
@@ -308,6 +308,60 @@ def VGG_bird_multilayer(net):
 def VGG_face_scratch_point_detection_net(net):
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
     y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
+    W = tf.Variable(tf.random_uniform([5,5,512,5],-1e-2,1e-2))
+    b = tf.Variable(tf.random_uniform([5],-1e-2,1e-2))
+    conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W, [1,1,1,1], 'VALID'), b )
+    conv = tf.nn.relu(conv)
+
+    total = tf.reduce_sum(conv, [1,2], True)
+    total = tf.clip_by_value(total,1e-9,1000000000)
+    conv /= total
+
+    mean_x, mean_y = 0,0
+
+    for i in range(10):
+        for j in range(10):
+            mean_x += conv[:,i,j,:] * (i + 0.5)
+            mean_y += conv[:,i,j,:] * (j + 0.5)
+
+
+    sxx, sxy, syy = 0.1,0,0.1
+
+    for i in range(10):
+        for j in range(10):
+            sxx += conv[:,i,j,:] * (i + 0.5 - mean_x) * (i + 0.5 - mean_x)
+            sxy += conv[:,i,j,:] * (i - mean_x) * (j - mean_y)
+            syy += conv[:,i,j,:] * (j - mean_y) * (j - mean_y)
+
+    k = 1. / (sxx * syy - sxy * sxy)
+    a =  syy * k
+    b = -sxy * k
+    d =  sxx * k
+
+    loss = a * (mean_x - x_) * (mean_x - x_) + \
+           d * (mean_y - y_) * (mean_y - y_) + \
+           2 * b * (mean_x - x_) * (mean_y - y_)
+
+    #variance should also be penalized, otherwise it does not learn anything useful.
+
+    eta = 0.00001
+    loss += eta * ( sxx*syy - sxy*sxy )
+
+    loss2 = tf.sqrt( (mean_x - x_) * (mean_x - x_) +
+                     (mean_y - y_) * (mean_y - y_) )
+
+    loss2 = tf.reduce_sum(loss2)
+    loss2 /= VGG_utils.BATCH_SIZE
+    loss2 /= 5.
+    loss = tf.reduce_sum(loss)
+    loss /= VGG_utils.BATCH_SIZE
+    loss /= 5.
+
+    return loss, mean_x, mean_y, x_, y_, loss2
+
+def VGG_face_scratch_point_detection_net_old(net):
+    x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
+    y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
     W = tf.Variable(tf.random_uniform([15,15,256,5],-1e-2,1e-2))
     b = tf.Variable(tf.random_uniform([5],-1e-2,1e-2))
     conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv3_2'], W, [1,1,1,1], 'VALID'), b )
@@ -329,7 +383,7 @@ def VGG_face_scratch_point_detection_net(net):
 
     for i in range(42):
         for j in range(42):
-            sxx += conv[:,i,j,:] * (i - mean_x) * (i - mean_x)
+            sxx += conv[:,i,j,:] * (i + 0.5 - mean_x) * (i + 0.5 - mean_x)
             sxy += conv[:,i,j,:] * (i - mean_x) * (j - mean_y)
             syy += conv[:,i,j,:] * (j - mean_y) * (j - mean_y)
 
@@ -345,7 +399,7 @@ def VGG_face_scratch_point_detection_net(net):
     #variance should also be penalized, otherwise it does not learn anything useful.
 
     eta = 0.001
-    loss += eta * (sxx + syy)
+    loss += eta * (sxx+syy)
 
     loss2 = tf.sqrt( (mean_x - x_) * (mean_x - x_) +
                      (mean_y - y_) * (mean_y - y_) )
@@ -353,6 +407,122 @@ def VGG_face_scratch_point_detection_net(net):
     loss2 = tf.reduce_sum(loss2)
     loss2 /= VGG_utils.BATCH_SIZE
     loss2 /= 5.
+    loss = tf.reduce_sum(loss)
+    loss /= VGG_utils.BATCH_SIZE
+    loss /= 5.
+
+    return loss, mean_x, mean_y, x_, y_, loss2
+
+def VGG_face_scratch_point_detection_net_GMM(net):
+    def calculate_embedding(landmarks):
+        embedding = []
+        for i in range(5):
+            for j in range(5):
+                for k in range(5):
+                    if i != j and j != k and i != k:
+
+                        a = landmarks[i,:] - landmarks[j,:]
+
+                        b = tf.sqrt( tf.square(landmarks[i,0] - landmarks[k,0]) +
+                                       tf.square(landmarks[i,1] - landmarks[k,1]) ) + 0.001
+
+                        embedding.append(a[0] / b)
+                        embedding.append(a[1] / b)
+
+        return tf.pack(embedding)
+    def logsumexp_tf(args,n):
+        mx = tf.reduce_max(args,reduction_indices=[0])
+        sum_ = 0
+        for i in range(n):
+            sum_ += tf.exp(args[i]-mx)
+
+        sum_ = tf.log(sum_)
+        sum_ += mx
+        return sum_
+    def negative_log_likelihood(weights, means, covars, x):
+
+        n_components = weights.shape[0]
+        d = means.shape[0]
+        args = []
+
+        for i in range(n_components):
+            ret = 0
+            ret += tf.log(np.asarray(weights[i]).astype(np.float32))
+            ret += np.asarray(-1/2.).astype(np.float32) * tf.reduce_sum( tf.log(np.asarray(covars[i]).astype(np.float32)) )
+            ret += np.asarray(-d/2.).astype(np.float32) * tf.log(np.asarray(2.).astype(np.float32) * np.asarray(np.pi).astype(np.float32))
+            ret += np.asarray(-1/2.).astype(np.float32) * tf.reduce_sum( tf.square(x - np.asarray(means[i]).astype(np.float32)) * (1./np.asarray(covars[i]).astype(np.float32)))
+            args.append( ret )
+
+        args = tf.pack(args)
+
+        return -logsumexp_tf(args, n_components)
+
+    x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
+    y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,5])
+    W = tf.Variable(tf.random_uniform([5,5,512,5],-1e-2,1e-2))
+    b = tf.Variable(tf.random_uniform([5],-1e-2,1e-2))
+    conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W, [1,1,1,1], 'VALID'), b )
+    conv = tf.nn.relu(conv)
+
+    total = tf.reduce_sum(conv, [1,2], True)
+    total = tf.clip_by_value(total,1e-9,1000000000)
+    conv /= total
+
+    mean_x, mean_y = 0,0
+
+    for i in range(10):
+        for j in range(10):
+            mean_x += conv[:,i,j,:] * (i + 0.5)
+            mean_y += conv[:,i,j,:] * (j + 0.5)
+
+
+    sxx, sxy, syy = 0.1,0,0.1
+
+    for i in range(10):
+        for j in range(10):
+            sxx += conv[:,i,j,:] * (i + 0.5 - mean_x) * (i + 0.5 - mean_x)
+            sxy += conv[:,i,j,:] * (i - mean_x) * (j - mean_y)
+            syy += conv[:,i,j,:] * (j - mean_y) * (j - mean_y)
+
+    k = 1. / (sxx * syy - sxy * sxy)
+    a =  syy * k
+    b = -sxy * k
+    d =  sxx * k
+
+    loss = a * (mean_x - x_) * (mean_x - x_) + \
+           d * (mean_y - y_) * (mean_y - y_) + \
+           2 * b * (mean_x - x_) * (mean_y - y_)
+
+    #variance should also be penalized, otherwise it does not learn anything useful.
+
+    eta = 0.00001
+    loss += eta * ( sxx*syy - sxy*sxy )
+
+    loss2 = tf.sqrt( (mean_x - x_) * (mean_x - x_) +
+                     (mean_y - y_) * (mean_y - y_) )
+    loss2 = tf.reduce_sum(loss2)
+    loss2 /= VGG_utils.BATCH_SIZE
+    loss2 /= 5.
+
+    #structural loss
+    w = np.load('weights.npy')
+    m = np.load('means.npy')
+    c = np.load('covars.npy')
+
+    structural_loss = 0
+
+    mean_x = tf.reshape(mean_x, (VGG_utils.BATCH_SIZE,5,1))
+    mean_y = tf.reshape(mean_y, (VGG_utils.BATCH_SIZE,5,1))
+    y = tf.concat(2,[mean_x, mean_y])
+
+    for i in range(VGG_utils.BATCH_SIZE):
+        u = y[i,:,:]
+        e = calculate_embedding(u)
+        nll = negative_log_likelihood(w,m,c,e)
+        structural_loss += nll
+
+    beta = 0.00000001
+    loss += beta * structural_loss
     loss = tf.reduce_sum(loss)
     loss /= VGG_utils.BATCH_SIZE
     loss /= 5.
@@ -539,5 +709,59 @@ def VGG_face_68_point_detection_net(net):
     loss = tf.reduce_sum(loss)
     loss /= VGG_utils.BATCH_SIZE
     loss /= 68.
+
+    return loss, mean_x, mean_y, x_, y_, loss2
+
+def VGG_face_29_point_detection_net(net):
+    x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,29])
+    y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,29])
+    W = tf.Variable(tf.random_uniform([5,5,512,29],-1e-2,1e-2))
+    b = tf.Variable(tf.random_uniform([29],-1e-2,1e-2))
+    conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W, [1,1,1,1], 'VALID'), b )
+    conv = tf.nn.relu(conv)
+
+    total = tf.reduce_sum(conv, [1,2], True)
+    total = tf.clip_by_value(total,1e-9,1000000000)
+    conv /= total
+
+    mean_x, mean_y = 0,0
+
+    for i in range(10):
+        for j in range(10):
+            mean_x += conv[:,i,j,:] * (i + 0.5)
+            mean_y += conv[:,i,j,:] * (j + 0.5)
+
+
+    sxx, sxy, syy = 0.1,0,0.1
+
+    for i in range(10):
+        for j in range(10):
+            sxx += conv[:,i,j,:] * (i + 0.5 - mean_x) * (i + 0.5 - mean_x)
+            sxy += conv[:,i,j,:] * (i + 0.5 - mean_x) * (j + 0.5 - mean_y)
+            syy += conv[:,i,j,:] * (j + 0.5 - mean_y) * (j + 0.5 - mean_y)
+
+    k = 1. / (sxx * syy - sxy * sxy)
+    a =  syy * k
+    b = -sxy * k
+    d =  sxx * k
+
+    loss = a * (mean_x - x_) * (mean_x - x_) + \
+           d * (mean_y - y_) * (mean_y - y_) + \
+           2 * b * (mean_x - x_) * (mean_y - y_)
+
+    #variance should also be penalized, otherwise it does not learn anything useful.
+
+    eta = 0.0001
+    loss += eta * (sxx + syy)
+
+    loss2 = tf.sqrt( (mean_x - x_) * (mean_x - x_) +
+                     (mean_y - y_) * (mean_y - y_) )
+
+    loss2 = tf.reduce_sum(loss2)
+    loss2 /= VGG_utils.BATCH_SIZE
+    loss2 /= 29.
+    loss = tf.reduce_sum(loss)
+    loss /= VGG_utils.BATCH_SIZE
+    loss /= 29.
 
     return loss, mean_x, mean_y, x_, y_, loss2

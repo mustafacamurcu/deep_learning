@@ -58,6 +58,24 @@ def Helen_directories(name):
         jpg = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/HelenData/Test/images/*.jpg') )
     return jpg,txt
 
+def _300W_directories(name):
+    if name == "train":
+        txt = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/300WData/Train/annotations/*.txt') )
+        jpg = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/300WData/Train/images/*.jpg') )
+    if name == "test":
+        txt = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/300WData/Test/annotations/*.txt') )
+        jpg = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/300WData/Test/images/*.jpg') )
+    return jpg,txt
+
+def COFW_directories(name):
+    if name == "train":
+        txt = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/COFWData/Train/annotations/*.txt') )
+        jpg = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/COFWData/Train/images/*.jpg') )
+    if name == "test":
+        txt = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/COFWData/Test/annotations/*.txt') )
+        jpg = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/COFWData/Test/images/*.jpg') )
+    return jpg,txt
+
 def human_random_slice_directories(name):
     if name == "train":
         txt = sorted( glob.glob('/data/vision/torralba/health-habits/other/enes/HumanData/Train/annotations/*.txt') )
@@ -148,6 +166,36 @@ def import_LFPW_data(jpg,txt):
     return all_data
 
 def import_Helen_data(jpg,txt):
+    print len(jpg), " ", len(txt)
+    all_data = []
+    for i in range(len(txt)):
+        f = open(txt[i],"r")
+        data = f.readlines()
+        temp = []
+        for j in range(len(data)):
+            t2 = data[j].split()
+            for k in range(2):
+                t2[k] = float(t2[k])
+            temp.append(t2)
+        all_data.append( (jpg[i],temp) )
+    return all_data
+
+def import_300W_data(jpg,txt):
+    print len(jpg), " ", len(txt)
+    all_data = []
+    for i in range(len(txt)):
+        f = open(txt[i],"r")
+        data = f.readlines()
+        temp = []
+        for j in range(len(data)):
+            t2 = data[j].split()
+            for k in range(2):
+                t2[k] = float(t2[k])
+            temp.append(t2)
+        all_data.append( (jpg[i],temp) )
+    return all_data
+
+def import_COFW_data(jpg,txt):
     print len(jpg), " ", len(txt)
     all_data = []
     for i in range(len(txt)):
