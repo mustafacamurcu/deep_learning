@@ -487,7 +487,7 @@ def VGG_bird_visibility_conv4_9(net):
     loss /= VGG_utils.BATCH_SIZE
 
     return loss, mean_x, mean_y, x_, y_, z_, loss2, saver
-
+    
 def VGG_face_68_point_detection_net(net):
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,68])
     y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,68])
