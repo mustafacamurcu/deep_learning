@@ -817,11 +817,7 @@ def VGG_face_15_point_detection_net(net):
 
     loss2 *= z_
 
-    loss2 = tf.reduce_sum(loss2)
-    loss2 /= VGG_utils.BATCH_SIZE
-    loss2 /= 15.
-    loss = tf.reduce_sum(loss)
-    loss /= VGG_utils.BATCH_SIZE
-    loss /= 15.
+    loss2 = tf.reduce_mean(loss2)
+    loss = tf.reduce_mean(loss)
 
     return loss, mean_x, mean_y, x_, y_, z_, loss2
