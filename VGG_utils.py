@@ -237,9 +237,9 @@ def get_next_batch_kaggle(df):
 
     for i in range(BATCH_SIZE):
         image = np.array( df['Image'].tolist()[i].split(' ') ).astype(np.float32).reshape(96,96)
-        batch_x[i,:,:,0] = scipy.misc.imresize(image, (224,224)).reshape(1,224,224,1)
-        batch_x[i,:,:,1] = scipy.misc.imresize(image, (224,224)).reshape(1,224,224,1)
-        batch_x[i,:,:,2] = scipy.misc.imresize(image, (224,224)).reshape(1,224,224,1)
+        batch_x[i,:,:,0] = scipy.misc.imresize(image, (224,224))
+        batch_x[i,:,:,1] = scipy.misc.imresize(image, (224,224))
+        batch_x[i,:,:,2] = scipy.misc.imresize(image, (224,224))
 
     all_keys = \
     [
