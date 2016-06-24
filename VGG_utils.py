@@ -241,7 +241,7 @@ def get_next_batch_kaggle(df):
         batch_x[i,:,:,1] = scipy.misc.imresize(image, (224,224)).reshape(1,224,224,1)
         batch_x[i,:,:,2] = scipy.misc.imresize(image, (224,224)).reshape(1,224,224,1)
 
-    all_keys =
+    all_keys = \
     [
         "left_eye_center",
         "right_eye_center",
