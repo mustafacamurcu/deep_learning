@@ -1,6 +1,7 @@
 import tensorflow as tf
 import VGG_utils
 import numpy as np
+
 def VGG_bird_point_detection_net(net):
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
     y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
@@ -657,7 +658,7 @@ def VGG_bird_visibility_conv4_9(net):
     loss /= VGG_utils.BATCH_SIZE
 
     return loss, mean_x, mean_y, x_, y_, z_, loss2, saver
-    
+
 def VGG_face_68_point_detection_net(net):
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,68])
     y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,68])
@@ -765,3 +766,62 @@ def VGG_face_29_point_detection_net(net):
     loss /= 29.
 
     return loss, mean_x, mean_y, x_, y_, loss2
+
+def VGG_face_15_point_detection_net(net):
+    x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
+    y_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
+    z_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,15])
+    W = tf.Variable(tf.random_uniform([5,5,512,15],-1e-2,1e-2))
+    b = tf.Variable(tf.random_uniform([15],-1e-2,1e-2))
+
+    conv = tf.nn.bias_add( tf.nn.conv2d(net.layers['conv5_2'], W, [1,1,1,1], 'VALID'), b )
+    conv = tf.nn.relu(conv)
+
+    total = tf.reduce_sum(conv, [1,2], True)
+    total = tf.clip_by_value(total,1e-9,1000000000)
+    conv /= total
+
+    mean_x, mean_y = 0,0
+
+    for i in range(10):
+        for j in range(10):
+            mean_x += conv[:,i,j,:] * (i + 0.5)
+            mean_y += conv[:,i,j,:] * (j + 0.5)
+
+    sxx, sxy, syy = 0.1,0,0.1
+
+    for i in range(10):
+        for j in range(10):
+            sxx += conv[:,i,j,:] * (i - mean_x) * (i - mean_x)
+            sxy += conv[:,i,j,:] * (i - mean_x) * (j - mean_y)
+            syy += conv[:,i,j,:] * (j - mean_y) * (j - mean_y)
+
+    k = 1. / (sxx * syy - sxy * sxy)
+    a =  syy * k
+    b = -sxy * k
+    d =  sxx * k
+
+    loss = a * (mean_x - x_) * (mean_x - x_) + \
+           d * (mean_y - y_) * (mean_y - y_) + \
+           2 * b * (mean_x - x_) * (mean_y - y_)
+
+    loss *= z_ #handling non-existent points
+
+    #variance should also be penalized, otherwise it does not learn anything useful.
+
+    eta = 0.00001
+    loss += eta * ( sxx*syy - sxy*sxy )
+
+    loss2 = tf.sqrt( (mean_x - x_) * (mean_x - x_) +
+                     (mean_y - y_) * (mean_y - y_) )
+
+    loss2 *= z_
+
+    loss2 = tf.reduce_sum(loss2)
+    loss2 /= VGG_utils.BATCH_SIZE
+    loss2 /= 15.
+    loss = tf.reduce_sum(loss)
+    loss /= VGG_utils.BATCH_SIZE
+    loss /= 15.
+
+    return loss, mean_x, mean_y, x_, y_, z_, loss2
