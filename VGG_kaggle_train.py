@@ -49,7 +49,7 @@ with tf.Session() as sess:
             f.flush()
             error = 0; l2 = 0;
             for i in range(10):
-                batch_x,batch_point_x,batch_point_y = VGG_utils.get_next_batch_kaggle(df)
+                batch_x,batch_point_x,batch_point_y, batch_existence = VGG_utils.get_next_batch_kaggle(df)
                 a = sess.run( [loss,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y, z_: batch_existence} )
                 error += a[0]; l2 += a[1]
             error /= 10.; l2 /= 10.;
