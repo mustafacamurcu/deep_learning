@@ -265,7 +265,7 @@ def get_next_batch_kaggle(df):
             batch_point_x[i,j] = df[all_keys[j] + '_x'].tolist()[i]
             batch_point_y[i,j] = df[all_keys[j] + '_y'].tolist()[i]
 
-    batch_existence = np.isnan(batch_point_x).astype(np.float32)
+    batch_existence = 1 - np.isnan(batch_point_x).astype(np.float32)
 
     batch_point_x = np.nan_to_num(batch_point_x) * 224 / 96.
     batch_point_y = np.nan_to_num(batch_point_y) * 224 / 96.
