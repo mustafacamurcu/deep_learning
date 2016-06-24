@@ -233,7 +233,7 @@ def get_next_batch_kaggle(df):
     batch_point_y = np.zeros((BATCH_SIZE,15))
     batch_existence = np.zeros((BATCH_SIZE,15))
 
-    df = df.sample(BATCH_SIZE)
+    df = df.loc[random.sample(list(df.index),BATCH_SIZE)]
 
     for i in range(BATCH_SIZE):
         image = np.array( df['Image'].tolist()[i].split(' ') ).astype(np.float32).reshape(96,96)
