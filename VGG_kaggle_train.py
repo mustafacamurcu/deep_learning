@@ -34,7 +34,7 @@ with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
     while ITERATIONS > 0:
         batch_x,batch_point_x,batch_point_y,batch_existence = VGG_utils.get_next_batch_kaggle(df)
-        _, error,mx,my,l2 = sess.run( [train_step,loss,mean_x,mean_y,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y  z_: batch_existence} )
+        _, error,mx,my,l2 = sess.run( [train_step,loss,mean_x,mean_y,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y,  z_: batch_existence} )
 
         ITERATIONS -= 1
         sys.stdout.write('\r\x1b[K')
@@ -50,7 +50,7 @@ with tf.Session() as sess:
             error = 0; l2 = 0;
             for i in range(10):
                 batch_x,batch_point_x,batch_point_y = VGG_utils.get_next_batch_kaggle(df)
-                a = sess.run( [loss,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y z_: batch_existence} )
+                a = sess.run( [loss,loss2], feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y, z_: batch_existence} )
                 error += a[0]; l2 += a[1]
             error /= 10.; l2 /= 10.;
             sys.stdout.write("Validation Error: %lf loss2: %lf Remaining Iterations: %d" %(error, l2, ITERATIONS))
