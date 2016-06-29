@@ -137,6 +137,7 @@ def import_MTFL_data(jpg,txt):
     all_data = []
     print "loading data..."
     for i in range(100): # WRONG WRONG WRONG
+        print i
         show_progress(i,len(txt))
         f = open(txt[i],"r")
         data = f.readlines()
