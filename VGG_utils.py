@@ -7,7 +7,7 @@ import glob
 import random
 import pandas as pd
 
-BATCH_SIZE = 10
+BATCH_SIZE = 1
 
 def imread(path):
     return scipy.misc.imread(path).astype(np.float32)
