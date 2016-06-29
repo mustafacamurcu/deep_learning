@@ -267,7 +267,7 @@ def get_next_batch_kaggle(df):
 
     batch_existence = 1 - np.isnan(batch_point_x).astype(np.float32)
 
-    batch_point_x = np.nan_to_num(batch_point_x) * 224 / 96.
-    batch_point_y = np.nan_to_num(batch_point_y) * 224 / 96.
+    batch_point_x = np.nan_to_num(batch_point_x) * 10 / 96.
+    batch_point_y = np.nan_to_num(batch_point_y) * 10 / 96.
 
     return batch_x, batch_point_x, batch_point_y, batch_existence
