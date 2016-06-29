@@ -490,11 +490,15 @@ def VGG_face_scratch_point_detection_net_GMM(net):
     b = -sxy * k
     d =  sxx * k
 
-    loss = a * (mean_x - x_) * (mean_x - x_) + \
+    loss = 0
+
+    visual_loss = a * (mean_x - x_) * (mean_x - x_) + \
            d * (mean_y - y_) * (mean_y - y_) + \
            2 * b * (mean_x - x_) * (mean_y - y_)
 
     #variance should also be penalized, otherwise it does not learn anything useful.
+
+    loss += visual_loss
 
     eta = 0.00001
     loss += eta * ( sxx*syy - sxy*sxy )
@@ -523,12 +527,17 @@ def VGG_face_scratch_point_detection_net_GMM(net):
         structural_loss += nll
 
     beta = 0.00000001
-    loss += beta * structural_loss
+    structural_loss = beta * structural_loss
+    loss += structural_loss
+
     loss = tf.reduce_sum(loss)
     loss /= VGG_utils.BATCH_SIZE
     loss /= 5.
 
-    return loss, mean_x, mean_y, x_, y_, loss2
+    structural_gradient = tf.gradients(structural_loss, mean_x)
+    visual_gradient = tf.gradients(visual_loss, mean_x)
+
+    return loss, mean_x, mean_y, x_, y_, loss2, structural_gradient, visual_gradient
 
 def VGG_human_point_detection_net(net):
     x_ = tf.placeholder(tf.float32, shape = [VGG_utils.BATCH_SIZE,14])
@@ -792,9 +801,9 @@ def VGG_face_15_point_detection_net(net):
 
     for i in range(10):
         for j in range(10):
-            sxx += conv[:,i,j,:] * (i - mean_x) * (i - mean_x)
-            sxy += conv[:,i,j,:] * (i - mean_x) * (j - mean_y)
-            syy += conv[:,i,j,:] * (j - mean_y) * (j - mean_y)
+            sxx += conv[:,i,j,:] * (i + 0.5 - mean_x) * (i + 0.5 - mean_x)
+            sxy += conv[:,i,j,:] * (i + 0.5 - mean_x) * (j + 0.5 - mean_y)
+            syy += conv[:,i,j,:] * (j + 0.5 - mean_y) * (j + 0.5 - mean_y)
 
     k = 1. / (sxx * syy - sxy * sxy)
     a =  syy * k
