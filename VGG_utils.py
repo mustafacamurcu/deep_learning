@@ -5,8 +5,9 @@ from PIL import Image
 import matplotlib.image as mpimg
 import glob
 import random
+import pandas as pd
 
-BATCH_SIZE = 10
+BATCH_SIZE = 1
 
 def imread(path):
     return scipy.misc.imread(path).astype(np.float32)
@@ -224,3 +225,49 @@ def get_next_trn_batch_human(all_data):
             batch_existence[i][j] = 1.
 
     return (batch_x,batch_point_x,batch_point_y,batch_existence)
+
+def get_next_batch_kaggle(df):
+
+    batch_x = np.zeros((BATCH_SIZE,224,224,3))
+    batch_point_x = np.zeros((BATCH_SIZE,15))
+    batch_point_y = np.zeros((BATCH_SIZE,15))
+    batch_existence = np.zeros((BATCH_SIZE,15))
+
+    df = df.loc[random.sample(list(df.index),BATCH_SIZE)]
+
+    for i in range(BATCH_SIZE):
+        image = np.array( df['Image'].tolist()[i].split(' ') ).astype(np.float32).reshape(96,96)
+        batch_x[i,:,:,0] = scipy.misc.imresize(image, (224,224))
+        batch_x[i,:,:,1] = scipy.misc.imresize(image, (224,224))
+        batch_x[i,:,:,2] = scipy.misc.imresize(image, (224,224))
+
+    all_keys = \
+    [
+        "left_eye_center",
+        "right_eye_center",
+        "left_eye_inner_corner",
+        "left_eye_outer_corner",
+        "right_eye_inner_corner",
+        "right_eye_outer_corner",
+        "left_eyebrow_inner_end",
+        "left_eyebrow_outer_end",
+        "right_eyebrow_inner_end",
+        "right_eyebrow_outer_end",
+        "nose_tip",
+        "mouth_left_corner",
+        "mouth_right_corner",
+        "mouth_center_top_lip",
+        "mouth_center_bottom_lip"
+    ]
+
+    for i in range(BATCH_SIZE):
+        for j in range(15):
+            batch_point_x[i,j] = df[all_keys[j] + '_x'].tolist()[i]
+            batch_point_y[i,j] = df[all_keys[j] + '_y'].tolist()[i]
+
+    batch_existence = 1 - np.isnan(batch_point_x).astype(np.float32)
+
+    batch_point_x = np.nan_to_num(batch_point_x) * 10 / 96.
+    batch_point_y = np.nan_to_num(batch_point_y) * 10 / 96.
+
+    return batch_x, batch_point_x, batch_point_y, batch_existence
