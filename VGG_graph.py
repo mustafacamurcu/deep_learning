@@ -546,8 +546,8 @@ def VGG_face_scratch_point_detection_net_GMM(net):
 
     print "###################"
 
-    structural_gradient = tf.gradients(structural_loss, W[1,2,3,4])
-    visual_gradient = tf.gradients(visual_loss, W[1,2,3,4])
+    structural_gradient = tf.gradients(structural_loss, W)
+    visual_gradient = tf.gradients(visual_loss, W)
 
     print structural_gradient
     print visual_gradient
