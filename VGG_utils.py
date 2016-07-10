@@ -183,6 +183,12 @@ def get_next_trn_batch_scratch_face(all_data):
             batch_point_x[i][j] = all_data[trn_indices[i]][1][0][ 2*j ] * 10 / float(aa)
             batch_point_y[i][j] = all_data[trn_indices[i]][1][0][2*j+1] * 10 / float(aa)
 
+    # DELETE FOLLOWING LINES 
+    batch_x = np.ones((BATCH_SIZE,224,224,3))
+    batch_point_x = np.ones((BATCH_SIZE,5))
+    batch_point_y = np.ones((BATCH_SIZE,5))
+
+
     return (batch_x,batch_point_x,batch_point_y)
 
 def get_next_trn_caltech_batch_face(all_data):
