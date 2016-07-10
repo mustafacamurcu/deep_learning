@@ -482,8 +482,8 @@ def VGG_face_scratch_point_detection_net_GMM(net):
     for i in range(10):
         for j in range(10):
             sxx += conv[:,i,j,:] * (i + 0.5 - mean_x) * (i + 0.5 - mean_x)
-            sxy += conv[:,i,j,:] * (i - mean_x) * (j - mean_y)
-            syy += conv[:,i,j,:] * (j - mean_y) * (j - mean_y)
+            sxy += conv[:,i,j,:] * (i + 0.5 - mean_x) * (j + 0.5 - mean_y)
+            syy += conv[:,i,j,:] * (j + 0.5 - mean_y) * (j + 0.5 - mean_y)
 
     k = 1. / (sxx * syy - sxy * sxy)
     a =  syy * k
@@ -518,9 +518,9 @@ def VGG_face_scratch_point_detection_net_GMM(net):
 
     structural_loss = 0
 
-    mean_x = tf.reshape(mean_x, (VGG_utils.BATCH_SIZE,5,1))
-    mean_y = tf.reshape(mean_y, (VGG_utils.BATCH_SIZE,5,1))
-    y = tf.concat(2,[mean_x, mean_y])
+    mean_x_ = tf.reshape(mean_x, (VGG_utils.BATCH_SIZE,5,1))
+    mean_y_ = tf.reshape(mean_y, (VGG_utils.BATCH_SIZE,5,1))
+    y = tf.concat(2,[mean_x_, mean_y_])
 
     for i in range(VGG_utils.BATCH_SIZE):
         u = y[i,:,:]
