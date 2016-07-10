@@ -42,7 +42,7 @@ with tf.Session() as sess:
 
         ITERATIONS -= 1
         sys.stdout.write('\r\x1b[K')
-        sys.stdout.write("Train Error: %lf loss2: %lf Remaining Iterations: %d sg: %lf vg: %lf" %(error,l2, ITERATIONS,sg,vg))
+        sys.stdout.write("Train Error: %lf loss2: %lf Remaining Iterations: %d sg: %lf vg: %lf" %(error,l2, ITERATIONS,sg[0,0],vg[0,0]))
         sys.stdout.flush()
 
         if ITERATIONS % 10 == 0:
