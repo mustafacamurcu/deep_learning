@@ -415,46 +415,64 @@ def VGG_face_scratch_point_detection_net_old(net):
     return loss, mean_x, mean_y, x_, y_, loss2
 
 def VGG_face_scratch_point_detection_net_GMM(net):
+
     def calculate_embedding(landmarks):
-        embedding = []
+        embedding = 0
         for i in range(5):
             for j in range(5):
                 for k in range(5):
                     if i != j and j != k and i != k:
 
-                        a = landmarks[i,:] - landmarks[j,:]
+                        a = landmarks[:,i,:] - landmarks[:,j,:]
 
-                        b = tf.sqrt( tf.square(landmarks[i,0] - landmarks[k,0]) +
-                                       tf.square(landmarks[i,1] - landmarks[k,1]) ) + 0.001
+                        b = tf.sqrt( tf.square(landmarks[:,i,0] - landmarks[:,k,0]) +
+                                     tf.square(landmarks[:,i,1] - landmarks[:,k,1]) ) + 0.001
 
-                        embedding.append(a[0] / b)
-                        embedding.append(a[1] / b)
+                        first =  tf.reshape(a[:,0]/b,[-1,1])
+                        second = tf.reshape(a[:,1]/b,[-1,1])
 
-        return tf.pack(embedding)
+                        u = tf.concat(1,[first,second])
+
+                        if i == 0 and j == 1 and k == 2:
+                            embedding = u
+                        else:
+                            embedding = tf.concat(1,[embedding, u ])
+
+        return embedding
+
     def logsumexp_tf(args,n):
-        mx = tf.reduce_max(args,reduction_indices=[0])
+        mx = tf.reduce_max(args,reduction_indices=[1])
         sum_ = 0
         for i in range(n):
-            sum_ += tf.exp(args[i]-mx)
+            sum_ += tf.exp(args[:,i]-mx)
 
         sum_ = tf.log(sum_)
         sum_ += mx
         return sum_
+
     def negative_log_likelihood(weights, means, covars, x):
+
+        def f(x):
+            return np.asarray(x).astype(np.float32)
 
         n_components = weights.shape[0]
         d = means.shape[0]
-        args = []
+        args = 0
 
         for i in range(n_components):
             ret = 0
-            ret += tf.log(np.asarray(weights[i]).astype(np.float32))
-            ret += np.asarray(-1/2.).astype(np.float32) * tf.reduce_sum( tf.log(np.asarray(covars[i]).astype(np.float32)) )
-            ret += np.asarray(-d/2.).astype(np.float32) * tf.log(np.asarray(2.).astype(np.float32) * np.asarray(np.pi).astype(np.float32))
-            ret += np.asarray(-1/2.).astype(np.float32) * tf.reduce_sum( tf.square(x - np.asarray(means[i]).astype(np.float32)) * (1./np.asarray(covars[i]).astype(np.float32)))
-            args.append( ret )
 
-        args = tf.pack(args)
+            ret += f(-1/2.) * tf.reduce_sum( tf.square( x - f(means[i]) ) * (1./ f(covars[i])),
+                                             reduction_indices = 1)
+
+            ret += tf.log( f(weights[i]) )
+            ret += f(-1/2.) * tf.reduce_sum( tf.log(f(covars[i])) )
+            ret += f(-d/2.) * tf.log( f(2. * np.pi) )
+
+            if i == 0:
+                args = tf.reshape(ret,[-1,1])
+            else:
+                args = tf.concat(1,[args,tf.reshape(ret,[-1,1])])
 
         return -logsumexp_tf(args, n_components)
 
@@ -516,20 +534,15 @@ def VGG_face_scratch_point_detection_net_GMM(net):
     m = np.load('means.npy')
     c = np.load('covars.npy')
 
-    structural_loss = 0
-
     mean_x_ = tf.reshape(mean_x, (VGG_utils.BATCH_SIZE,5,1))
     mean_y_ = tf.reshape(mean_y, (VGG_utils.BATCH_SIZE,5,1))
     y = tf.concat(2,[mean_x_, mean_y_])
 
-    for i in range(VGG_utils.BATCH_SIZE):
-        u = y[i,:,:]
-        e = calculate_embedding(u)
-        nll = negative_log_likelihood(w,m,c,e)
-        structural_loss += nll
-
     beta = 0.00000001
-    structural_loss = beta * structural_loss
+
+    embedding = calculate_embedding(y)
+    structural_loss = beta * negative_log_likelihood(w,m,c,embedding)
+
     structural_loss = tf.reduce_sum(structural_loss)
 
     loss += structural_loss
