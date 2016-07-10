@@ -35,10 +35,9 @@ g = open(root + "Experiments/Results/VGG_face_scratch_test_gmm_log_conv5_5.txt",
 
 with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
-    saver.restore(sess, root + 'Experiments/Models/VGG_face_scratch_model_conv5_5_gmm')
     while ITERATIONS > 0:
         batch_x,batch_point_x,batch_point_y = VGG_utils.get_next_trn_batch_scratch_face(train_data)
-        error,mx,my,l2,sg,vg = sess.run( [loss,mean_x,mean_y,loss2, structural_gradient, visual_gradient],
+        _,error,mx,my,l2,sg,vg = sess.run( [train_step,loss,mean_x,mean_y,loss2, structural_gradient, visual_gradient],
                                         feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y } )
 
         ITERATIONS -= 1
@@ -63,7 +62,7 @@ with tf.Session() as sess:
             g.write(str(error) + "\n")
             g.flush()
 
-        #if ITERATIONS % 200 == 0:
-        #    saver.save(sess, root + 'Experiments/Models/VGG_face_scratch_model_conv5_5_gmm')
+        if ITERATIONS % 200 == 0:
+            saver.save(sess, root + 'Experiments/Models/VGG_face_scratch_model_conv5_5_gmm')
 f.close()
 g.close()
