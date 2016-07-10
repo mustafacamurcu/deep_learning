@@ -496,6 +496,8 @@ def VGG_face_scratch_point_detection_net_GMM(net):
            d * (mean_y - y_) * (mean_y - y_) + \
            2 * b * (mean_x - x_) * (mean_y - y_)
 
+    visual_loss = tf.reduce_sum(visual_loss)
+
     #variance should also be penalized, otherwise it does not learn anything useful.
 
     loss += visual_loss
@@ -528,14 +530,21 @@ def VGG_face_scratch_point_detection_net_GMM(net):
 
     beta = 0.00000001
     structural_loss = beta * structural_loss
+    structural_loss = tf.reduce_sum(structural_loss)
+
     loss += structural_loss
 
     loss = tf.reduce_sum(loss)
     loss /= VGG_utils.BATCH_SIZE
     loss /= 5.
 
-    structural_gradient = tf.gradients(structural_loss, x_)[0]
-    visual_gradient = tf.gradients(visual_loss, x_)[0]
+    structural_gradient = tf.gradients(structural_loss, x_)
+    visual_gradient = tf.gradients(visual_loss, x_)
+
+    print "###################"
+    
+    structural_gradient = tf.gradients(structural_loss, W)
+    visual_gradient = tf.gradients(visual_loss, W)
 
     print structural_gradient
     print visual_gradient
