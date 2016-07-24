@@ -538,7 +538,7 @@ def VGG_face_scratch_point_detection_net_GMM(net):
     mean_y_ = tf.reshape(mean_y, (VGG_utils.BATCH_SIZE,5,1))
     y = tf.concat(2,[mean_x_, mean_y_])
 
-    beta = 0.000000001
+    beta = 0.0000000000001
 
     embedding = calculate_embedding(y)
     structural_loss = beta * negative_log_likelihood(w,m,c,embedding)
