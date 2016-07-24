@@ -37,12 +37,12 @@ with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
     while ITERATIONS > 0:
         batch_x,batch_point_x,batch_point_y = VGG_utils.get_next_trn_batch_scratch_face(train_data)
-        _, error,mx,my,l2,sg,vg = sess.run( [train_step,loss,mean_x,mean_y,loss2, structural_gradient, visual_gradient],
+        _,error,mx,my,l2,sg,vg = sess.run( [train_step,loss,mean_x,mean_y,loss2, structural_gradient, visual_gradient],
                                         feed_dict = {x: batch_x, x_: batch_point_x, y_: batch_point_y } )
 
         ITERATIONS -= 1
         sys.stdout.write('\r\x1b[K')
-        sys.stdout.write("Train Error: %lf loss2: %lf Remaining Iterations: %d sg: %lf vg: %lf" %(error,l2, ITERATIONS,sg,vg))
+        sys.stdout.write("Train Error: %lf loss2: %lf Remaining Iterations: %d sg: %lf vg: %lf" %(error,l2, ITERATIONS,sg[0,0],vg[0,0]))
         sys.stdout.flush()
 
         if ITERATIONS % 10 == 0:
