@@ -530,15 +530,15 @@ def VGG_face_scratch_point_detection_net_GMM(net):
     loss2 /= 5.
 
     #structural loss
-    w = np.load('weights.npy')
-    m = np.load('means.npy')
-    c = np.load('covars.npy')
+    w = np.load('face_4000_weights.npy')
+    m = np.load('face_4000_means.npy')
+    c = np.load('face_4000_covars.npy')
 
     mean_x_ = tf.reshape(mean_x, (VGG_utils.BATCH_SIZE,5,1))
     mean_y_ = tf.reshape(mean_y, (VGG_utils.BATCH_SIZE,5,1))
     y = tf.concat(2,[mean_x_, mean_y_])
 
-    beta = 0.000001
+    beta = 0.000000001
 
     embedding = calculate_embedding(y)
     structural_loss = beta * negative_log_likelihood(w,m,c,embedding)
